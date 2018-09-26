@@ -191,6 +191,7 @@ def build(bld):
                                                '..',
                                                'Include',
                                                bld.Path('Code/CryEngine'),
+                                               bld.Path('Code/CryEngine/Cry3DEngine'),
                                                bld.Path('Code/CryEngine/CryAction'),
                                                bld.Path('Code/CryEngine/CrySystem'),
                                                bld.Path('Gems/LmbrCentral/Code/include'),
@@ -201,7 +202,9 @@ def build(bld):
                                                bld.Path('Code/Lyzard/SDK/include'),
                                                bld.Path('Code/Lyzard/Modules/Gems/include'),
                                                bld.Path('Code/Lyzard/Modules/Projects/include'),
-                                               bld.Path('Code/Lyzard/Modules/Engines/include')],
+                                               bld.Path('Code/Lyzard/Modules/Engines/include'),
+                                               bld.Path('../3rdParty/voxigen/include'),
+                                               bld.Path('../3rdParty/glm')],
 
         defines                             = ['DONT_BAN_STD_STRING',
                                                'USE_MEM_ALLOCATOR',

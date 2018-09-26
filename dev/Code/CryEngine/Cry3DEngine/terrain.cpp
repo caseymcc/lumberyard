@@ -14,6 +14,7 @@
 // Description : check vis
 
 
+
 #include "StdAfx.h"
 
 #include "terrain.h"
@@ -55,7 +56,7 @@ CTerrain::CTerrain(const STerrainInfo& TerrainInfo)
     // set params
     m_nUnitSize = TerrainInfo.nUnitSize_InMeters;
     m_fInvUnitSize = 1.f / TerrainInfo.nUnitSize_InMeters;
-    m_nTerrainSize = TerrainInfo.nHeightMapSize_InUnits * TerrainInfo.nUnitSize_InMeters;
+    m_nTerrainSize = TerrainInfo.nTerrainSizeX_InUnits * TerrainInfo.nUnitSize_InMeters;
     m_nSectorSize = TerrainInfo.nSectorSize_InMeters;
     m_nSectorsTableSize = TerrainInfo.nSectorsTableSize_InSectors;
     m_fOceanWaterLevel = TerrainInfo.fOceanWaterLevel;
@@ -689,7 +690,7 @@ void CTerrain::UpdateSectorMeshes(const SRenderingPassInfo& passInfo)
 
 static Vec3 GetTerrainNormal(CTerrain& terrain, int x, int y)
 {
-    const int   nTerrainSize = CTerrain::GetTerrainSize();
+    const int   nTerrainSize =terrain.GetTerrainSize();
     const int nRange = terrain.GetHeightMapUnitSize();
 
     float sx;
@@ -751,7 +752,7 @@ _smart_ptr<IRenderMesh> CTerrain::MakeAreaRenderMesh(const Vec3& vPos, float fRa
     posBuffer.reserve(nEstimateVerts);
     lstIndices.reserve(nEstimateVerts * 6);
 
-    const CTerrain* pTerrain = GetTerrain();
+    const IEngineTerrain* pTerrain = GetTerrain();
     for (int x = vBoxMin.x; x <= vBoxMax.x; x += nUnitSize)
     {
         for (int y = vBoxMin.y; y <= vBoxMax.y; y += nUnitSize)

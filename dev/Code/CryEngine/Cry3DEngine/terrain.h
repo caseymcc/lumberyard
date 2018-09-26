@@ -16,7 +16,7 @@
 #pragma once
 
 #include <ISerialize.h>
-#include <ITerrain.h>
+#include <IEngineTerrain.h>
 
 #include <Terrain/Texture/MacroTexture.h>
 #include <Terrain/Texture/TexturePool.h>
@@ -166,17 +166,19 @@ struct SNameChunk
 #pragma pack(pop)
 
 class CTerrain
-    : public ITerrain
+    : public IEngineTerrain
     , public Cry3DEngineBase
 {
     friend class CTerrainNode;
 public:
-    using Meter = int;
-    using MeterF = float;
-    using Unit = int;
+//    using Meter = int;
+//    using MeterF = float;
+//    using Unit = int;
 
     CTerrain(const STerrainInfo& TerrainInfo);
     ~CTerrain();
+
+    virtual int GetType() { return STerrainInfo::Default; }
 
     virtual float GetZ(Meter x, Meter y) const;
     virtual float GetBilinearZ(MeterF x1, MeterF y1) const;
@@ -189,38 +191,23 @@ public:
     virtual bool IsHole(Meter x, Meter y) const;
     virtual bool IsMeshQuadFlipped(const Meter x, const Meter y, const Meter nUnitSize) const;
 
-    struct SRayTrace
-    {
-        float t;
-        Vec3  hitPoint;
-        Vec3  hitNormal;
-        _smart_ptr<IMaterial> material;
-
-        SRayTrace()
-            : t(0)
-            , hitPoint(0, 0, 0)
-            , hitNormal(0, 0, 1)
-            , material(nullptr)
-        {}
-
-        SRayTrace(float t_, Vec3 const& hitPoint_, Vec3 const& hitNormal_, _smart_ptr<IMaterial> material_)
-            : t(t_)
-            , hitPoint(hitPoint_)
-            , hitNormal(hitNormal_)
-            , material(material_)
-        {}
-    };
-
     bool RayTrace(Vec3 const& vStart, Vec3 const& vEnd, SRayTrace* prt);
 
     void InitHeightfieldPhysics();
 
-    inline static const int GetTerrainSize();
-    inline static const int GetSectorSize();
-    inline static const int GetHeightMapUnitSize();
-    inline static const int GetSectorsTableSize();
-    inline static const float GetInvUnitSize();
+    const int GetTerrainSize() const;
+    const int GetSectorSize() const;
+    Vec3i GetSectorSizeVector() const;
+    const int GetHeightMapUnitSize();
+    const int GetSectorsTableSize();
+    const float GetInvUnitSize();
     inline const int GetTerrainUnits() const;
+
+    virtual const int GetUnitToSectorBitShift() const{ return m_UnitToSectorBitShift; }
+    virtual const int GetMeterToUnitBitShift() const{return m_MeterToUnitBitShift; }
+
+    virtual bool HasRootNode() { return GetRootNode()!=NULL; }
+    virtual AABB GetRootBBoxVirtual() { return GetRootNode()->GetBBoxVirtual(); }
 
     inline CTerrainNode* GetRootNode();
     CTerrainNode* GetLeafNodeAt(Meter x, Meter y);
@@ -239,6 +226,7 @@ public:
     bool IsTextureStreamingInProgress() const;
     void CloseTerrainTextureFile();
     void SetTerrainSectorTexture(int nTexSectorX, int nTexSectorY, unsigned int textureId, bool bMergeNotAllowed);
+    virtual MacroTexture *GetMacroTexture() { return m_MacroTexture.get(); }
 
     _smart_ptr<IRenderMesh> MakeAreaRenderMesh(const Vec3& vPos, float fRadius, _smart_ptr<IMaterial> pMat, const char* szLSourceName, Plane* planes);
     bool RenderArea(Vec3 vPos, float fRadius, _smart_ptr<IRenderMesh>& arrLightRenderMeshs, CRenderObject* pObj, _smart_ptr<IMaterial> pMaterial, const char* szComment, float* pCustomData, Plane* planes, const SRenderingPassInfo& passInfo);
@@ -276,24 +264,29 @@ public:
 
     inline int GetTerrainTextureNodeSizeMeters();
 
+    virtual int GetWhiteTexId() const { return m_nWhiteTexId; }
+
     int m_nWhiteTexId;
     int m_nBlackTexId;
 
+//    virtual void SetNodePyramid(int treeLevel, int x, int y, CTerrainNode *node) { m_NodePyramid[treeLevel][x][y]=node; }
     PodArray<Array2d<CTerrainNode*> > m_NodePyramid;
 
     void ActivateNodeTexture(CTerrainNode* pNode, const SRenderingPassInfo& passInfo);
     void ActivateNodeProcObj(CTerrainNode* pNode);
 
-    bool Load(AZ::IO::HandleType fileHandle, int nDataSize, struct STerrainChunkHeader* pTerrainChunkHeader, std::vector<struct IStatObj*>** ppStatObjTable, std::vector<_smart_ptr<IMaterial>>** ppMatTable);
+    //need more work
+    bool Load(const char *levelPath, STerrainInfo* pTerrainInfo) { return false; }
+    bool Load(AZ::IO::HandleType fileHandle, int nDataSize, struct STerrainChunkHeader* pTerrainChunkHeader, STerrainInfo* pTerrainInfo, std::vector<struct IStatObj*>** ppStatObjTable, std::vector<_smart_ptr<IMaterial>>** ppMatTable);
 
     // REFACTOR IN PROGRESS
     //////////////////////////////////////////////////////////////////////////
 
     // (bethelz) TODO: These belong in 3DEngine
-    static void RemoveAllStaticObjects();
-    static bool RemoveObjectsInArea(Vec3 vExploPos, float fExploRadius);
+    void RemoveAllStaticObjects();
+    bool RemoveObjectsInArea(Vec3 vExploPos, float fExploRadius);
     static void GetObjectsAround(Vec3 vPos, float fRadius, PodArray<struct SRNInfo>* pEntList, bool bSkip_ERF_NO_DECALNODE_DECALS, bool bSkipDynamicObjects);
-    static bool Recompile_Modified_Incrementaly_RoadRenderNodes();
+    bool Recompile_Modified_Incrementaly_RoadRenderNodes();
     //
 
     // (bethelz) TODO: Remove global ocean dependency
@@ -323,7 +316,7 @@ public:
 
 private:
     template <class T>
-    bool Load_T(T& f, int& nDataSize, STerrainChunkHeader* pTerrainChunkHeader, std::vector<struct IStatObj*>** ppStatObjTable, std::vector<_smart_ptr<IMaterial>>** ppMatTable, bool bHotUpdate, SHotUpdateInfo* pExportInfo);
+    bool Load_T(T& f, int& nDataSize, STerrainChunkHeader* pTerrainChunkHeader, STerrainInfo *pTerrainInfo, std::vector<struct IStatObj*>** ppStatObjTable, std::vector<_smart_ptr<IMaterial>>** ppMatTable, bool bHotUpdate, SHotUpdateInfo* pExportInfo);
 
     int GetTablesSize(SHotUpdateInfo* pExportInfo);
     void SaveTables(byte*& pData, int& nDataSize, std::vector<struct IStatObj*>*& pStatObjTable, std::vector<_smart_ptr<IMaterial>>*& pMatTable, std::vector<struct IStatInstGroup*>*& pStatInstGroupTable, EEndian eEndian, SHotUpdateInfo* pExportInfo);
@@ -373,13 +366,14 @@ private:
     PodArray<CTerrainNode*> m_lstActiveTextureNodes;
     PodArray<CTerrainNode*> m_lstActiveProcObjNodes;
 
+    CTerrainUpdateDispatcher *GetTerrainUpdateDispatcher() const { return m_pTerrainUpdateDispatcher; }
     CTerrainUpdateDispatcher* m_pTerrainUpdateDispatcher;
 
     CTerrainNode* m_RootNode;
 
     PodArray<CTerrainNode*> m_lstSectors;
 
-    static void BuildErrorsTableForArea(
+    void BuildErrorsTableForArea(
         float* pLodErrors, int nMaxLods,
         int X1, int Y1, int X2, int Y2,
         const float* heightmap,
@@ -420,14 +414,19 @@ private:
 };
 
 
-inline const int CTerrain::GetTerrainSize()
+inline const int CTerrain::GetTerrainSize() const
 {
     return m_nTerrainSize;
 }
 
-inline const int CTerrain::GetSectorSize()
+inline const int CTerrain::GetSectorSize() const
 {
     return m_nSectorSize;
+}
+
+inline Vec3i CTerrain::GetSectorSizeVector() const
+{
+    return Vec3i(0, 0, 0); //this is related to positioning
 }
 
 inline const int CTerrain::GetHeightMapUnitSize()

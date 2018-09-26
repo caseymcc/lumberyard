@@ -1,8 +1,8 @@
-<Material MtlFlags="524326" Shader="Illum" GenMask="0" StringGenMask="" SurfaceType="" MatTemplate="" Diffuse="1,1,1" Specular="0,0,0" Emissive="1,1,1" Shininess="10" Opacity="0.99" AlphaTest="0.2">
+<Material MtlFlags="524326" Shader="Illum" GenMask="10000000000003" StringGenMask="%ALLOW_SILHOUETTE_POM%ALLOW_SPECULAR_ANTIALIASING%SUBSURFACE_SCATTERING" SurfaceType="" Diffuse="1,1,1,1" Specular="0,0,0,1" Opacity="0.99000001" Shininess="10" AlphaTest="0.2" vertModifType="0" LayerAct="1">
  <Textures>
   <Texture Map="Diffuse" File="Editor/Materials/voxel_editor.dds" Filter="1" IsTileU="0" IsTileV="0">
-   <TexMod TileU="0.89999998" TileV="0.89999998" OffsetU="0.5" OffsetV="0.5" TexMod_UOscillatorType="5" TexMod_VOscillatorType="5" TexMod_UOscillatorRate="1" TexMod_VOscillatorRate="1" TexMod_UOscillatorAmplitude="0.025" TexMod_VOscillatorAmplitude="0.025"/>
+   <TexMod TexMod_RotateType="0" TexMod_TexGenType="0" TexMod_bTexGenProjected="0" TileU="0.89999998" OffsetU="0.5" TexMod_UOscillatorType="5" TexMod_UOscillatorRate="1" TexMod_UOscillatorAmplitude="0.025" TileV="0.89999998" OffsetV="0.5" TexMod_VOscillatorType="5" TexMod_VOscillatorRate="1" TexMod_VOscillatorAmplitude="0.025"/>
   </Texture>
  </Textures>
- <PublicParams AmbientMultiplier="0" IndirectColor="0.25,0.25,0.25"/>
+ <PublicParams EmittanceMapGamma="1" SSSIndex="0" IndirectColor="0.25,0.25,0.25"/>
 </Material>

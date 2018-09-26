@@ -109,7 +109,7 @@ float C3DEngine::GetWaterLevel()
     {
         return OceanRequest::GetOceanLevel();
     }
-    return m_pTerrain ? m_pTerrain->CTerrain::GetWaterLevel() : WATER_LEVEL_UNKNOWN;
+    return m_pTerrain ? m_pTerrain->GetWaterLevel() : WATER_LEVEL_UNKNOWN;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -319,7 +319,7 @@ void C3DEngine::TraceFogVolumes(const Vec3& worldPos, ColorF& fogVolumeContrib, 
 ///////////////////////////////////////////////////////////////////////////////
 int C3DEngine::GetTerrainSize()
 {
-    return CTerrain::GetTerrainSize();
+    return m_pTerrain ? m_pTerrain->GetTerrainSize() : 0;
 }
 #include "ParticleEmitter.h"
 

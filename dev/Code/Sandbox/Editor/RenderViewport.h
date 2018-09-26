@@ -150,6 +150,9 @@ public:
     void SetFOV(float fov);
     float GetFOV() const;
 
+    void SetSectorSize(Vec3i size);
+    Vec3i GetSectorSize() const;
+
     void SetDefaultCamera();
     bool IsDefaultCamera() const;
     void SetSequenceCamera();

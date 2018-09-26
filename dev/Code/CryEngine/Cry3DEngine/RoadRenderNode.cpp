@@ -258,7 +258,7 @@ void CRoadRenderNode::Compile() PREFAST_SUPPRESS_WARNING(6262) //function uses >
                     int X_in_meters = x1 + x * nUnitSize;
                     int Y_in_meters = y1 + y * nUnitSize;
 
-                    CTerrain* pTerrain = GetTerrain();
+                    IEngineTerrain* pTerrain = GetTerrain();
 
                     if (m_bIgnoreTerrainHoles || (pTerrain && !pTerrain->IsHole(X_in_meters, Y_in_meters)))
                     {
@@ -326,7 +326,7 @@ void CRoadRenderNode::Compile() PREFAST_SUPPRESS_WARNING(6262) //function uses >
             m_lstTang.Clear();
             m_lstTang.PreAllocate(m_lstVerts.Count(), m_lstVerts.Count());
 
-            int nStep = CTerrain::GetHeightMapUnitSize();
+            int nStep = GetTerrain()->GetHeightMapUnitSize();
 
             Vec3 vWSBoxCenter = m_WSBBox.GetCenter(); //vWSBoxCenter.z=0;
 

@@ -80,7 +80,7 @@ public: // Create from serialization only
 
     const char* GetTemporaryLevelName() const;
     void DeleteTemporaryLevel();
-    void InitEmptyLevel(int resolution = 0, int unitSize = 0, bool bUseTerrain = false);
+    void InitEmptyLevel(int type=0, int sizeX=0, int sizeY=0, int sizeZ=0, int unitSize=0, bool bUseTerrain=false);
     void CreateDefaultLevelAssets(int resolution = 0, int unitSize = 0);
     bool IsLevelExported() const;
     void SetLevelExported(bool boExported = true);
