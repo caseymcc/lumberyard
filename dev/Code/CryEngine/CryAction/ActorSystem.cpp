@@ -160,6 +160,11 @@ IActor* CActorSystem::GetActorByChannelId(ChannelId channelId)
 //------------------------------------------------------------------------
 IActor* CActorSystem::CreateActor(ChannelId channelId, const char* name, const char* actorClass, const Vec3& pos, const Quat& rot, const Vec3& scale, EntityId id, TSerialize* serializer)
 {
+    return CreateActor(channelId, name, actorClass, Vec3i(0, 0, 0), pos, rot, scale, id, serializer);
+}
+
+IActor* CActorSystem::CreateActor(ChannelId channelId, const char* name, const char* actorClass, const Vec3i &sector, const Vec3& pos, const Quat& rot, const Vec3& scale, EntityId id, TSerialize* serializer)
+{
     // get the entity class
     IEntityClass* pEntityClass = m_pEntitySystem->GetClassRegistry()->FindClass(actorClass);
 
@@ -183,6 +188,7 @@ IActor* CActorSystem::CreateActor(ChannelId channelId, const char* name, const c
     params.id = id;
     params.pUserData = (void*)&userData;
     params.sName = name;
+    params.vSector = sector;
     params.vPosition = pos;
     params.qRotation = rot;
     params.vScale = scale;

@@ -14,6 +14,7 @@
 #pragma once
 
 #define COMPILED_HEIGHT_MAP_FILE_NAME "terrain/terrain.dat"
+#define COMPILED_TERRAIN_FILE_NAME "terrain/terrain.dat"
 #define COMPILED_TERRAIN_TEXTURE_FILE_NAME "terrain/cover.ctc"
 
 #pragma pack(push,4)
@@ -24,7 +25,7 @@ struct IStatObj;
 struct IMaterial;
 struct IStatInstGroup;
 
-struct STerrainInfo
+struct STerrainInfo_29
 {
     int nHeightMapSize_InUnits;
     int nUnitSize_InMeters;
@@ -37,7 +38,29 @@ struct STerrainInfo
     AUTO_STRUCT_INFO
 };
 
-#define TERRAIN_CHUNK_VERSION 29
+struct STerrainInfo
+{
+    const static int Default=0;
+    const static int Voxel=1;
+
+    int type;
+//    int nHeightMapSize_InUnits;
+    unsigned int nTerrainSizeX_InUnits;
+    unsigned int nTerrainSizeY_InUnits;
+    unsigned int nTerrainSizeZ_InUnits;
+    int nUnitSize_InMeters;
+    int nSectorSize_InMeters;
+    int nSectorSizeY_InMeters;
+    int nSectorSizeZ_InMeters;
+
+    int nSectorsTableSize_InSectors;
+    float fHeightmapZRatio;
+    float fOceanWaterLevel;
+
+    AUTO_STRUCT_INFO
+};
+
+#define TERRAIN_CHUNK_VERSION 30
 
 struct STerrainChunkHeader
 {
@@ -46,7 +69,7 @@ struct STerrainChunkHeader
     int8 nFlags;
     int8 nFlags2;
     int32 nChunkSize;
-    STerrainInfo TerrainInfo;
+//    STerrainInfo TerrainInfo;
 
     AUTO_STRUCT_INFO
 };
@@ -84,6 +107,8 @@ struct ITerrain
         AUTO_STRUCT_INFO
     };
 
+    virtual int GetType()=0;
+
     virtual bool SetCompiledData(byte* pData, int nDataSize, std::vector<IStatObj*>** ppStatObjTable, std::vector<_smart_ptr<IMaterial>>** ppMatTable, bool bHotUpdate = false, SHotUpdateInfo* pExportInfo = nullptr) = 0;
 
     virtual bool GetCompiledData(byte* pData, int nDataSize, std::vector<IStatObj*>** ppStatObjTable, std::vector<_smart_ptr<IMaterial>>** ppMatTable, std::vector<struct IStatInstGroup*>** ppStatInstGroupTable, EEndian eEndian, SHotUpdateInfo* pExportInfo = nullptr) = 0;
@@ -101,6 +126,10 @@ struct ITerrain
     virtual void InitTerrainWater(_smart_ptr<IMaterial> pTerrainWaterMat) = 0;
 
     virtual IRenderNode* AddVegetationInstance(int nStaticGroupID, const Vec3& vPos, const float fScale, uint8 ucBright, uint8 angle, uint8 angleX = 0, uint8 angleY = 0) = 0;
+
+    virtual bool Load(const char *levelPath, STerrainInfo* pTerrainInfo)=0;
+
+    virtual Vec3i GetSectorSizeVector() const=0;
 };
 
 //==============================================================================================

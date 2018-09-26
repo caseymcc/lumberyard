@@ -2383,7 +2383,7 @@ void CVoxelSegment::FindTrianglesForVoxelization(int nTID, PodArray<int>*& rpNod
         {
             float fStartTime = GetCurAsyncTimeSec();
 
-            CTerrain* pTerrain = GetTerrain();
+            IEngineTerrain* pTerrain = GetTerrain();
             int nWorldSize = pTerrain->GetTerrainSize();
             int S = pTerrain->GetHeightMapUnitSize();
 

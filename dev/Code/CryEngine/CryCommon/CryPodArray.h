@@ -132,6 +132,19 @@ public:
         ;
     }
 
+    template<typename _Functor>
+    int Find_If(_Functor &&lambda)
+    {
+        for(int i=0; i < m_nCount; i++)
+        {
+            if(lambda((*this)[i]))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     int FindReverse(const T& p)
     {
         for (int i = m_nCount - 1; i >= 0; i--)
@@ -144,6 +157,19 @@ public:
 
         return -1;
         ;
+    }
+
+    template<typename _Functor>
+    int FindReverse_If(_Functor &&lambda)
+    {
+        for(int i=m_nCount-1; i>=0; i--)
+        {
+            if(lambda((*this)[i]))
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
     inline void AddList(const PodArray<T>& lstAnother)

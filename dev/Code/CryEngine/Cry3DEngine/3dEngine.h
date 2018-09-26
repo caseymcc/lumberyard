@@ -25,7 +25,7 @@
 #undef DrawText
 #endif //DrawText
 
-struct ITerrain;
+class IEngineTerrain;
 struct STerrainInfo;
 class CCullBuffer;
 class IDeformableNode;

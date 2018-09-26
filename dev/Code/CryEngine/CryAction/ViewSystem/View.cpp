@@ -168,6 +168,7 @@ void CView::Update(float frameTime, bool isActive)
         }
 
         m_camera.SetFrustum(pSysCam->GetViewSurfaceX(), pSysCam->GetViewSurfaceZ(), fov, nearPlane, farPlane, pSysCam->GetPixelAspectRatio());
+        m_camera.SetSectorSize(pSysCam->GetSectorSize());
 
         //TODO: (14, 06, 2010, "the player view should always get updated, this due to the hud being visable, without shocking, in cutscenes - todo is to see if we can optimise this code");
         IActor* pActor = gEnv->pGame->GetIGameFramework()->GetClientActor();

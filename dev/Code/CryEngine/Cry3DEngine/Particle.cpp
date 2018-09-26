@@ -1699,7 +1699,7 @@ float CParticle::UpdateAlignment(SParticleState& state, SParticleUpdateContext c
     }
     case ParticleParams::EFacing::Terrain:
     {
-        if (CTerrain* const pTerrain = GetTerrain())
+        if (IEngineTerrain* const pTerrain = GetTerrain())
         {
             // Project center and velocity onto plane.
             if (state.m_Loc.s > 0.f)

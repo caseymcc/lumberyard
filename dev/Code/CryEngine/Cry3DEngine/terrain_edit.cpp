@@ -142,8 +142,8 @@ void CTerrain::BuildErrorsTableForArea(
     const SurfaceWeight* weightmap)
 {
     memset(pLodErrors, 0, nMaxLods * sizeof(pLodErrors[0]));
-    int nSectorSize = CTerrain::GetSectorSize() / CTerrain::GetHeightMapUnitSize();
-    int nTerrainSize = CTerrain::GetTerrainSize() / CTerrain::GetHeightMapUnitSize();
+    int nSectorSize = GetSectorSize() / GetHeightMapUnitSize();
+    int nTerrainSize = GetTerrainSize() / GetHeightMapUnitSize();
 
     bool bSectorHasHoles = false;
     bool bSectorHasMesh = false;

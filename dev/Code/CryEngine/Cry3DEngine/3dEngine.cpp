@@ -23,6 +23,7 @@
 
 #include "3dEngine.h"
 #include "terrain.h"
+#include "voxelTerrain.h"
 #include "VisAreas.h"
 #include "ObjMan.h"
 #include "terrain_water.h"
@@ -97,7 +98,7 @@ IRenderer* Cry3DEngineBase::m_pRenderer = 0;
 ITimer* Cry3DEngineBase::m_pTimer = 0;
 ILog* Cry3DEngineBase::m_pLog = 0;
 IPhysicalWorld* Cry3DEngineBase::m_pPhysicalWorld = 0;
-CTerrain* Cry3DEngineBase::m_pTerrain = 0;
+IEngineTerrain* Cry3DEngineBase::m_pTerrain = 0;
 IObjManager* Cry3DEngineBase::m_pObjManager = 0;
 IConsole* Cry3DEngineBase::m_pConsole = 0;
 C3DEngine* Cry3DEngineBase::m_p3DEngine = 0;
@@ -800,7 +801,7 @@ void C3DEngine::ProcessCVarsChange()
             Vec3(terrainSize * 2.f, terrainSize * 2.f, terrainSize * 2.f));
 
         // force recreation of terrain meshes
-        if (CTerrain* const pTerrain = GetTerrain())
+        if (IEngineTerrain* const pTerrain = GetTerrain())
         {
             pTerrain->ResetTerrainVertBuffers();
         }
@@ -1663,11 +1664,14 @@ float C3DEngine::GetTerrainElevation3D(Vec3 vPos)
 
 float C3DEngine::GetTerrainZ(int x, int y)
 {
-    if (x < 0 || y < 0 || x >= CTerrain::GetTerrainSize() || y >= CTerrain::GetTerrainSize())
+    if(!m_pTerrain)
+        return 0;
+
+    if (x < 0 || y < 0 || x >=m_pTerrain->GetTerrainSize() || y >=m_pTerrain->GetTerrainSize())
     {
         return TERRAIN_BOTTOM_LEVEL;
     }
-    return m_pTerrain ? m_pTerrain->GetZ(x, y) : 0;
+    return m_pTerrain->GetZ(x, y);
 }
 
 bool C3DEngine::GetTerrainHole(int x, int y)
@@ -1677,7 +1681,7 @@ bool C3DEngine::GetTerrainHole(int x, int y)
 
 int C3DEngine::GetHeightMapUnitSize()
 {
-    return CTerrain::GetHeightMapUnitSize();
+    return m_pTerrain->GetHeightMapUnitSize();
 }
 
 void C3DEngine::RemoveAllStaticObjects(int nSID)
@@ -1703,15 +1707,15 @@ void C3DEngine::OnExplosion(Vec3 vPos, float fRadius, bool bDeformTerrain)
         PrintMessage("Debug: C3DEngine::OnExplosion: Pos=(%.1f,%.1f,%.1f) fRadius=%.2f", vPos.x, vPos.y, vPos.z, fRadius);
     }
 
-    if (vPos.x < 0 || vPos.x >= CTerrain::GetTerrainSize() || vPos.y < 0 || vPos.y >= CTerrain::GetTerrainSize() || fRadius <= 0)
+    if (vPos.x < 0 || vPos.x >=m_pTerrain->GetTerrainSize() || vPos.y < 0 || vPos.y >=m_pTerrain->GetTerrainSize() || fRadius <= 0)
     {
         return; // out of terrain
     }
     // do not create decals near the terrain holes
     {
-        for (int x = int(vPos.x - fRadius); x <= int(vPos.x + fRadius) + 1; x += CTerrain::GetHeightMapUnitSize())
+        for (int x = int(vPos.x - fRadius); x <= int(vPos.x + fRadius) + 1; x +=m_pTerrain->GetHeightMapUnitSize())
         {
-            for (int y = int(vPos.y - fRadius); y <= int(vPos.y + fRadius) + 1; y += CTerrain::GetHeightMapUnitSize())
+            for (int y = int(vPos.y - fRadius); y <= int(vPos.y + fRadius) + 1; y +=m_pTerrain->GetHeightMapUnitSize())
             {
                 if (m_pTerrain->IsHole(x, y))
                 {
@@ -1886,13 +1890,13 @@ IPhysMaterialEnumerator* C3DEngine::GetPhysMaterialEnumerator()
 float C3DEngine::GetDistanceToSectorWithWater()
 {
     // If there's no terrain or no ocean, return an arbitrarily large number.
-    if (!m_pTerrain || !m_pTerrain->GetRootNode() || (OceanToggle::IsActive() && !OceanRequest::OceanIsEnabled()))
+    if (!m_pTerrain || !m_pTerrain->HasRootNode() || (OceanToggle::IsActive() && !OceanRequest::OceanIsEnabled()))
     {
         return std::numeric_limits<float>::infinity();
     }
 
     Vec3 camPostion = GetRenderingCamera().GetPosition();
-    bool bCameraInTerrainBounds = Overlap::Point_AABB2D(camPostion, m_pTerrain->GetRootNode()->GetBBoxVirtual());
+    bool bCameraInTerrainBounds = Overlap::Point_AABB2D(camPostion, m_pTerrain->GetRootBBoxVirtual());
 
     return (bCameraInTerrainBounds && (m_pTerrain && m_pTerrain->GetDistanceToSectorWithWater() > 0.1f))
            ? m_pTerrain->GetDistanceToSectorWithWater() : max(camPostion.z - OceanToggle::IsActive() ? OceanRequest::GetOceanLevel() : GetWaterLevel(), 0.1f);
@@ -2244,7 +2248,7 @@ bool C3DEngine::SetStatInstGroup(int nGroupId, const IStatInstGroup& siGroup, in
 
     rGroup.Update(GetCVars(), Get3DEngine()->GetGeomDetailScreenRes());
 
-    if (CTerrain* const pTerrain = GetTerrain())
+    if (IEngineTerrain* const pTerrain = GetTerrain())
     {
         pTerrain->MarkAllSectorsAsUncompiled();
     }
@@ -3841,7 +3845,16 @@ int C3DEngine::GetTerrainTextureNodeSizeMeters()
 ITerrain* C3DEngine::CreateTerrain(const STerrainInfo& TerrainInfo)
 {
     delete m_pTerrain;
-    m_pTerrain = new CTerrain(TerrainInfo);
+
+    if(TerrainInfo.type==STerrainInfo::Voxel)
+    {
+        VoxelTerrain *voxelTerrain=new VoxelTerrain(TerrainInfo);
+
+        m_pTerrain=voxelTerrain;
+    }
+    else
+        m_pTerrain=new CTerrain(TerrainInfo);
+
     return (ITerrain*)m_pTerrain;
 }
 

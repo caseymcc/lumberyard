@@ -1221,6 +1221,17 @@ void CEntity::InvalidateTM(int nWhyFlags, bool bRecalcPhyBounds)
 }
 
 //////////////////////////////////////////////////////////////////////////
+void CEntity::SetSector(const Vec3i &vSector)
+{
+    CHECKQNAN_VEC(vSector);
+    if(m_vSector==vSector)
+    {
+        return;
+    }
+
+    m_vSector=vSector;
+}
+
 void CEntity::SetPos(const Vec3& vPos, int nWhyFlags, bool bRecalcPhyBounds, bool bForce)
 {
     CHECKQNAN_VEC(vPos);
