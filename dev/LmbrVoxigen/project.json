@@ -1,0 +1,21 @@
+{
+    "project_name": "LmbrVoxigen",
+    "product_name": "LmbrVoxigen",
+    "executable_name": "LmbrVoxigenLauncher",
+    "modules" : [],
+    "project_id": "{DD8B9A9C-1C96-4D6A-8F12-7E0B8E9B59C5}",
+
+    "android_settings" : {
+        "package_name" : "com.lumberyard.yourgame",
+        "version_number" : 1,
+        "version_name" : "1.0.0.0",
+        "orientation" : "landscape"
+    },
+
+    "durango_settings" : {
+    },
+
+    "orbis_settings": {
+    }
+
+}

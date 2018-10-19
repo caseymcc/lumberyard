@@ -7,8 +7,9 @@
 
 #include "voxigenDefine.h"
 #include "voxelTerrainRegion.h"
-#include "updateDispatcher.h"
+//#include "updateDispatcher.h"
 
+#include "voxigen/renderCube.h"
 #include <unordered_map>
 #include <thread>
 
@@ -146,12 +147,13 @@ private:
     float m_viewRadius;
     float m_viewRadiusMax; //distance before renderer is removed
 
+    voxigen::RenderCube<VoxelWorld, VoxelTerrainChunk> m_renderCube;
 //    //we search for new chunks based on concentric rings around player. This allows us to use occlusion querying before loading
 //    std::vector<std::vector<glm::ivec3>> m_chunkSearchRings;
 
     //Query rings, checks to make sure chunk is in view before loading data
-    int m_currentQueryRing;
-    std::vector<std::vector<VoxelTerrainChunk *>> m_chunkQueryOrder;
+//    int m_currentQueryRing;
+//    std::vector<std::vector<VoxelTerrainChunk *>> m_chunkQueryOrder;
 
     //All renderers current in memory
     RegionRendererMap m_regionRenderers;
@@ -170,4 +172,18 @@ private:
     int m_whiteTextureId;
 };
 
-#endif //_Cry3DEngine_VoxelTerrain_h_
+#endif //_Cry3DEngine_VoxelTerrain_h
+
+    template<>
+    GLM_FUNC_QUALIFIER double next_float(double const& x)
+    {
+    #		if GLM_HAS_CXX11_STL
+        return std::nextafter(x, std::numeric_limits<double>::max());
+    #		elif((GLM_COMPILER & GLM_COMPILER_VC) || ((GLM_COMPILER & GLM_COMPILER_INTEL) && (GLM_PLATFORM & GLM_PLATFORM_WINDOWS)))
+        return detail::nextafter(x, std::numeric_limits<double>::max());
+    #		elif(GLM_PLATFORM & GLM_PLATFORM_ANDROID)
+        return __builtin_nextafter(x, FLT_MAX);
+    #		else
+        return nextafter(x, DBL_MAX);
+    #		endif
+    }

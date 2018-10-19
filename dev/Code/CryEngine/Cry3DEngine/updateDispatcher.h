@@ -16,8 +16,8 @@
 #pragma once
 
 
-#include "IJobManager.h"
-#include <IJobManager_JobDelegator.h>
+#include <AzCore/Jobs/Job.h>
+#include <AzCore/Jobs/JobManager.h>
 
 #include <memory>
 
@@ -62,7 +62,7 @@ struct Dispatch
 {
     _NodeType *node;
     std::shared_ptr<DispatchHandler> handler;
-    JobManager::SJobState state;
+    AZ::Job::State state;
 };
 // Container to manager temp memory as well as running update jobs
 template<typename _NodeType, size_t _PoolSize=4U<<20 >

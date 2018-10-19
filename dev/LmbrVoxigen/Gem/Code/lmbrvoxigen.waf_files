@@ -1,0 +1,18 @@
+{
+    "none": {
+        "Source": [
+            "Source/LmbrVoxigen_precompiled.cpp",
+            "Source/LmbrVoxigen_precompiled.h"
+        ]
+    },
+    "auto": {
+        "Include": [
+            "Include/LmbrVoxigen/LmbrVoxigenBus.h"
+        ],
+        "Source": [
+            "Source/LmbrVoxigenModule.cpp",
+            "Source/LmbrVoxigenSystemComponent.cpp",
+            "Source/LmbrVoxigenSystemComponent.h"
+        ]
+    }
+}

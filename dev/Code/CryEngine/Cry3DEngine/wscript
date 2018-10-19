@@ -29,6 +29,8 @@ def build(bld):
         win_features       = ['crcfix'],
         win_includes       = [bld.Path('../3rdParty/voxigen/include'),
             bld.Path('../3rdParty/voxigen/FastNoiseSIMD'),
+            bld.Path('../3rdParty/voxigen/generic'),
+            bld.Path('../3rdParty/voxigen/imglib'),
             bld.Path('../3rdParty/glm'),
             bld.ThirdPartyPath('mikkelsen')],
         win_x64_debug_lib           = ['voxigend', 'fastNoised'],
@@ -38,6 +40,7 @@ def build(bld):
         win_x64_release_libpath     = [bld.Path('../3rdParty/voxigen/_buildx64/Release'),
             bld.Path('../3rdParty/voxigen/_buildx64/FastNoiseSIMD/Release')],
         win_cxxflags         = ['/W3'],
+        includes           = [bld.ThirdPartyPath('mikkelsen')],
 
        
 

@@ -233,40 +233,41 @@ void VoxelTerrain::DrawVisibleSectors(const SRenderingPassInfo &passInfo)
     
     renderParams.AmbientColor=ColorF(1, 1, 1, 1);
 
-    std::vector<VoxelTerrainChunk *> completedChunks=m_updateDispatcher.SyncAllJobs(false, passInfo);
-
-    if(!completedChunks.empty())
-    {
-        for(size_t i=0; i<completedChunks.size(); ++i)
-        {
-            VoxelTerrainChunk *chunk=completedChunks[i];
-
-            chunk->DecrementInUse();
-            chunk->SetMeshReady(true);
-        }
-    }
+//    std::vector<VoxelTerrainChunk *> completedChunks=m_updateDispatcher.SyncAllJobs(false, passInfo);
+//
+//    if(!completedChunks.empty())
+//    {
+//        for(size_t i=0; i<completedChunks.size(); ++i)
+//        {
+//            VoxelTerrainChunk *chunk=completedChunks[i];
+//
+//            chunk->DecrementInUse();
+//            chunk->SetMeshReady(true);
+//        }
+//    }
 
     if(!passInfo.RenderTerrain()||!Get3DEngine()->m_bShowTerrainSurface)
         return;
 
-    for(RegionRendererMap::value_type pair:m_regionRenderers)
-    {
-        VoxelTerrainRegion &region=pair.second;
-
-        auto &chunkRendererMap=region.ChunkRenderers();
-
-        for(auto chunkIter=chunkRendererMap.begin(); chunkIter!=chunkRendererMap.end(); ++chunkIter)
-        {
-            VoxelTerrainChunk *chunk=chunkIter->second;
-
-//            if(chunk->IsMeshReady())
-            {
-                renderParams.pMatrix=&chunk->GetTransform();
-
-                chunk->RenderMesh(renderParams, passInfo);
-            }
-        }
-    }
+//    for(RegionRendererMap::value_type pair:m_regionRenderers)
+//    {
+//        VoxelTerrainRegion &region=pair.second;
+//
+//        auto &chunkRendererMap=region.ChunkRenderers();
+//
+//        for(auto chunkIter=chunkRendererMap.begin(); chunkIter!=chunkRendererMap.end(); ++chunkIter)
+//        {
+//            VoxelTerrainChunk *chunk=chunkIter->second;
+//
+////            if(chunk->IsMeshReady())
+//            {
+//                renderParams.pMatrix=&chunk->GetTransform();
+//
+//                chunk->RenderMesh(renderParams, passInfo);
+//            }
+//        }
+//    }
+    m_renderCube.draw(&m_program, m_offsetId);
 }
 
 void VoxelTerrain::UpdateSectorMeshes(const SRenderingPassInfo &passInfo)
@@ -513,8 +514,8 @@ void VoxelTerrain::buildChunkSearchRings(float radius)
     m_viewRadiusMax=radius*1.5f;
     size_t maxChunkRing=(size_t)std::ceil(radius/std::max(std::max(VoxelChunk::sizeX::value, VoxelChunk::sizeY::value), VoxelChunk::sizeZ::value));
 
-    m_chunkSearchRings.resize(maxChunkRing);
-    m_chunkQueryOrder.resize(maxChunkRing);
+//    m_chunkSearchRings.resize(maxChunkRing);
+//    m_chunkQueryOrder.resize(maxChunkRing);
 
     for(size_t i=0; i<maxChunkRing; ++i)
         voxigen::ringCube<VoxelChunk>(m_chunkSearchRings[i], i);
@@ -712,43 +713,43 @@ void VoxelTerrain::UpdateLoadedChunks(const SRenderingPassInfo &passInfo)
 }
 
 
-VoxelTerrainChunk *VoxelTerrain::GetFreeChunkRenderer()
-{
-    if(m_freeChunkRenderers.empty())
-    {
-        size_t minRendererCount=0;
-
-        for(size_t i=0; i<m_chunkSearchRings.size(); ++i)
-            minRendererCount+=m_chunkSearchRings[i].size();
-        minRendererCount=(minRendererCount*3)/2;
-
-        if(minRendererCount<m_chunkRenderers.size())
-            minRendererCount=m_chunkRenderers.size()+1;
-
-        if(m_chunkRenderers.size()<minRendererCount)
-        {
-            size_t buildIndex=m_chunkRenderers.size();
-            m_chunkRenderers.resize(minRendererCount);
-
-            //need to setup buffers for new chunks
-            for(size_t i=buildIndex; i<m_chunkRenderers.size(); ++i)
-            {
-                VoxelTerrainChunk *chunkRenderer=new VoxelTerrainChunk();
-
-                m_chunkRenderers[i].reset(chunkRenderer);
-
-//                chunkRenderer->SetParent(this);
-
-                m_freeChunkRenderers.push_back(chunkRenderer);
-            }
-        }
-    }
-
-    if(m_freeChunkRenderers.empty())
-        return nullptr;
-
-    VoxelTerrainChunk *renderer=m_freeChunkRenderers.back();
-
-    m_freeChunkRenderers.pop_back();
-    return renderer;
-}
+//VoxelTerrainChunk *VoxelTerrain::GetFreeChunkRenderer()
+//{
+//    if(m_freeChunkRenderers.empty())
+//    {
+//        size_t minRendererCount=0;
+//
+//        for(size_t i=0; i<m_chunkSearchRings.size(); ++i)
+//            minRendererCount+=m_chunkSearchRings[i].size();
+//        minRendererCount=(minRendererCount*3)/2;
+//
+//        if(minRendererCount<m_chunkRenderers.size())
+//            minRendererCount=m_chunkRenderers.size()+1;
+//
+//        if(m_chunkRenderers.size()<minRendererCount)
+//        {
+//            size_t buildIndex=m_chunkRenderers.size();
+//            m_chunkRenderers.resize(minRendererCount);
+//
+//            //need to setup buffers for new chunks
+//            for(size_t i=buildIndex; i<m_chunkRenderers.size(); ++i)
+//            {
+//                VoxelTerrainChunk *chunkRenderer=new VoxelTerrainChunk();
+//
+//                m_chunkRenderers[i].reset(chunkRenderer);
+//
+////                chunkRenderer->SetParent(this);
+//
+//                m_freeChunkRenderers.push_back(chunkRenderer);
+//            }
+//        }
+//    }
+//
+//    if(m_freeChunkRenderers.empty())
+//        return nullptr;
+//
+//    VoxelTerrainChunk *renderer=m_freeChunkRenderers.back();
+//
+//    m_freeChunkRenderers.pop_back();
+//    return renderer;
+//}

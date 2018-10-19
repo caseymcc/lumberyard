@@ -142,10 +142,8 @@
         ]
     },
     "Cry3DEngine_VoxelTerrain.cpp": {
-        "Terrain": [
+        "VoxelTerrain": [
             "AlignedVerticesBuffer.h",
-            "updateDispatcher.h",
-            "updateDispatcher.cpp",
             "voxelTerrain.cpp",
             "voxelTerrain.h",
             "voxelTerrainChunk.cpp",

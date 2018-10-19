@@ -1,0 +1,9 @@
+{
+    "description": "Configuration for LmbrVoxigen",
+    "visual_studio_name": "LmbrVoxigen",
+    "comment" : "",
+    "game_projects" : "LmbrVoxigen",
+
+    "modules" : [
+    ]
+}

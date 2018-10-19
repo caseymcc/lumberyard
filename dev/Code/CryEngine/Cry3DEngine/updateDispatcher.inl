@@ -61,7 +61,7 @@ void UpdateDispatcher<_NodeType, _PoolSize>::QueueJob(_NodeType* node, const SRe
     }
 }
 
-void StartJob(const SRenderingPassInfo &passInfo, IGeneralMemoryHeap *heap, DispatchHandler *handler, JobManager::SJobState *state);
+void StartJob(const SRenderingPassInfo &passInfo, IGeneralMemoryHeap *heap, DispatchHandler *handler, AZ::Job::State *state);
 
 template<typename _NodeType, size_t _PoolSize>
 bool UpdateDispatcher<_NodeType, _PoolSize>::RunJob(_NodeType* node, bool executeAsJob, const SRenderingPassInfo &passInfo)
