@@ -26,6 +26,7 @@ def build(bld):
         platforms          = ['all'],
         configurations     = ['all'],
         use                = [ 'AzFramework' ],
+        defines=['VOXIGEN_STATIC_DEFINE', 'IMGLIB_STATIC_DEFINE'],
         win_features       = ['crcfix'],
         win_includes       = [bld.Path('../3rdParty/voxigen/include'),
             bld.Path('../3rdParty/voxigen/FastNoiseSIMD'),
