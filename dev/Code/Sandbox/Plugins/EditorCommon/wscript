@@ -24,7 +24,7 @@ def build(bld):
         platforms           = ['win', 'darwin'],
         configurations      = ['debug', 'debug_test', 'profile', 'profile_test'],
         features            = ['qt5'],
-        use                 = ['EditorCore', 'AzQtComponents'],
+        use                 = ['EditorCore', 'AzToolsFramework', 'AzQtComponents'],
         uselib              = ['QTMAIN',
                                'QTANGLE',
                                'QT5CORE',

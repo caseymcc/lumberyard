@@ -139,4 +139,5 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
-#include <Components/Widgets/ScrollBar.moc>
+//not a Qbject
+//#include <Components/Widgets/ScrollBar.moc>

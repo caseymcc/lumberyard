@@ -58,6 +58,7 @@ NON_BUILD_COMMANDS = [
     'generate_module_dependency_files',
     'generate_game_project',
     'msvs',
+    'msvs_build',
     'eclipse',
     'android_studio',
     'xcode_ios',
@@ -96,6 +97,7 @@ LMBR_WAFLIB_MODULES = [
         'gccdeps',
         'clangdeps',
         'msvs:win32', # msvcdeps implicitly depends on this module, so load it first
+        'msvs_build:win32',
         'msvcdeps:win32',
 
         'cry_utils',

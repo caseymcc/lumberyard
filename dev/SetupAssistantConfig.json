@@ -1727,6 +1727,24 @@
                     "exampleFile" : "bin/darwin_x64/release/dxcMetal"
                 }
            ]
+        },
+        {
+            "identifier" : "voxigen",
+            "name" : "voxigen",
+            "version" : "1.0.0",
+            "source" : "voxigen",
+            "description" : "voxigenDescriptionSummary",
+            "detailedInstructions" : "voxigenDetailedInstructions",
+            "roles" : [ "compilegame", "compileengine" ],
+            "hostOS" : [ "windows", "linux" ],
+            "symlinks" :
+            [
+                {
+                    "source": "voxigen",
+                    "destination": "$CODEFOLDERNAME$/SDKs/voxigen",
+                    "exampleFile": "regularGrid.h"
+                }
+            ]
         }
     ]
 }
