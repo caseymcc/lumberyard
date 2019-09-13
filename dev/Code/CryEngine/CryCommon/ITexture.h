@@ -398,89 +398,89 @@ public:
     // </interfuscator:shuffle>
 };
 
-// Animating Texture sequence definition
-struct STexAnim
-{
-    int m_nRefCount;
-    TArray<CTexture*> m_TexPics;
-    int m_Rand;
-    int m_NumAnimTexs;
-    bool m_bLoop;
-    float m_Time;
-
-    int Size()
-    {
-        int nSize = sizeof(STexAnim);
-        nSize += m_TexPics.GetMemoryUsage();
-        return nSize;
-    }
-    void Release()
-    {
-        long refCnt = CryInterlockedDecrement(&m_nRefCount);
-        if (refCnt > 0)
-        {
-            return;
-        }
-        delete this;
-    }
-    void AddRef()
-    {
-        CryInterlockedIncrement(&m_nRefCount);
-    }
-
-    STexAnim()
-    {
-        m_nRefCount = 1;
-        m_Rand = 0;
-        m_NumAnimTexs = 0;
-        m_bLoop = false;
-        m_Time = 0.0f;
-    }
-
-    ~STexAnim()
-    {
-        for (uint32 i = 0; i < m_TexPics.Num(); i++)
-        {
-            ITexture* pTex = (ITexture*) m_TexPics[i];
-            SAFE_RELEASE(pTex);
-        }
-        m_TexPics.Free();
-    }
-
-    STexAnim& operator = (const STexAnim& sl)
-    {
-        // make sure not same object
-        if (this == &sl)
-        {
-            return *this;
-        }
-
-        for (uint32 i = 0; i < m_TexPics.Num(); i++)
-        {
-            ITexture* pTex = (ITexture*)m_TexPics[i];
-            SAFE_RELEASE(pTex);
-        }
-        m_TexPics.Free();
-
-        for (uint32 i = 0; i < sl.m_TexPics.Num(); i++)
-        {
-            ITexture* pTex = (ITexture*)sl.m_TexPics[i];
-            if (pTex)
-            {
-                pTex->AddRef();
-            }
-
-            m_TexPics.AddElem(sl.m_TexPics[i]);
-        }
-
-        m_Rand = sl.m_Rand;
-        m_NumAnimTexs = sl.m_NumAnimTexs;
-        m_bLoop = sl.m_bLoop;
-        m_Time = sl.m_Time;
-
-        return *this;
-    }
-};
+//// Animating Texture sequence definition
+//struct STexAnim
+//{
+//    int m_nRefCount;
+//    TArray<CTexture*> m_TexPics;
+//    int m_Rand;
+//    int m_NumAnimTexs;
+//    bool m_bLoop;
+//    float m_Time;
+//
+//    int Size()
+//    {
+//        int nSize = sizeof(STexAnim);
+//        nSize += m_TexPics.GetMemoryUsage();
+//        return nSize;
+//    }
+//    void Release()
+//    {
+//        long refCnt = CryInterlockedDecrement(&m_nRefCount);
+//        if (refCnt > 0)
+//        {
+//            return;
+//        }
+//        delete this;
+//    }
+//    void AddRef()
+//    {
+//        CryInterlockedIncrement(&m_nRefCount);
+//    }
+//
+//    STexAnim()
+//    {
+//        m_nRefCount = 1;
+//        m_Rand = 0;
+//        m_NumAnimTexs = 0;
+//        m_bLoop = false;
+//        m_Time = 0.0f;
+//    }
+//
+//    ~STexAnim()
+//    {
+//        for (uint32 i = 0; i < m_TexPics.Num(); i++)
+//        {
+//            ITexture* pTex = (ITexture*) m_TexPics[i];
+//            SAFE_RELEASE(pTex);
+//        }
+//        m_TexPics.Free();
+//    }
+//
+//    STexAnim& operator = (const STexAnim& sl)
+//    {
+//        // make sure not same object
+//        if (this == &sl)
+//        {
+//            return *this;
+//        }
+//
+//        for (uint32 i = 0; i < m_TexPics.Num(); i++)
+//        {
+//            ITexture* pTex = (ITexture*)m_TexPics[i];
+//            SAFE_RELEASE(pTex);
+//        }
+//        m_TexPics.Free();
+//
+//        for (uint32 i = 0; i < sl.m_TexPics.Num(); i++)
+//        {
+//            ITexture* pTex = (ITexture*)sl.m_TexPics[i];
+//            if (pTex)
+//            {
+//                pTex->AddRef();
+//            }
+//
+//            m_TexPics.AddElem(sl.m_TexPics[i]);
+//        }
+//
+//        m_Rand = sl.m_Rand;
+//        m_NumAnimTexs = sl.m_NumAnimTexs;
+//        m_bLoop = sl.m_bLoop;
+//        m_Time = sl.m_Time;
+//
+//        return *this;
+//    }
+//};
 
 struct STexComposition
 {

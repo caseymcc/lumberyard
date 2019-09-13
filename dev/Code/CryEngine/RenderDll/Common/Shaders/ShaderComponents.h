@@ -15,6 +15,7 @@
 
 #include "../Defs.h"
 #include "ShadersResourcesGroups/PerFrame.h"
+#include "STexAnim.h"
 
 #if defined(AZ_RESTRICTED_PLATFORM)
     #if defined(AZ_PLATFORM_XENIA)

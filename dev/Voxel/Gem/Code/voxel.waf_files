@@ -1,0 +1,12 @@
+{
+    "auto": {
+        "Include": [
+            "Include/Voxel/VoxelBus.h"
+        ],
+        "Source": [
+            "Source/VoxelModule.cpp",
+            "Source/VoxelSystemComponent.cpp",
+            "Source/VoxelSystemComponent.h"
+        ]
+    }
+}

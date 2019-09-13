@@ -3,7 +3,14 @@
 #pragma once
 
 #include "ITerrain.h"
-#include "Terrain/Texture/MacroTexture.h"
+#include <ISerialize.h>
+#include <TerrainFactory.h>
+
+#include <Terrain/Texture/MacroTexture.h>
+#include <Terrain/Texture/TexturePool.h>
+#include <Terrain/Bus/LegacyTerrainBus.h>
+#include <AzCore/std/function/function_fwd.h> // for callbacks
+#include "Environment/OceanEnvironmentBus.h"
 
 class COcean;
 class CTerrainUpdateDispatcher;

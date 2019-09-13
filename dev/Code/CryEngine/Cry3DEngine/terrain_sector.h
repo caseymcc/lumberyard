@@ -647,7 +647,7 @@ struct STerrainNodeChunk
 
 #pragma pack(pop)
 
-#include "terrain.h"
+//#include "terrain.h"
 
 inline const AABB CTerrainNode::GetBBox() const
 {

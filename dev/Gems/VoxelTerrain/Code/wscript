@@ -1,0 +1,49 @@
+
+def build(bld):
+    bld.DefineGem(
+        # General
+        disable_pch             = True,
+        file_list               = ['voxelterrain.waf_files'],
+        
+        # Testing
+        test_all_file_list      = ['voxelterrain_tests.waf_files'],
+
+        includes                = ['.',
+            bld.Path('Code/CryEngine/Cry3DEngine')
+        ],
+        
+        defines                 = ['FORCE_STANDARD_ASSERT', 'VOXIGEN_STATIC_DEFINE', 'IMGLIB_STATIC_DEFINE'],
+        use                     = ['Cry3DEngine', 'AzCore', 'AzGameFramework'],
+        uselib                  = ['AWS_CPP_SDK_ALL', 'GLM', 'VOXIGEN'],
+
+        # Add custom build options here
+        
+        # To add an editor module to your gem:
+        #
+        #   1. declare editor module settings here in a field called 'editor'.
+        #
+        # Editor = dict(
+        #    file_list           = ['voxelterrain_editor.waf_files'],
+        #    test_all_file_list  = ['voxelterrain_editor_tests.waf_files'],
+        #
+        #    and any additional options to override for the editor module, for example, 
+        #    defines             = ["EDITOR_MODULE"],
+        #    
+        # )
+        #
+        #   2. Add the Editor Module to the gem's gem.json modules list in the gem.json file for this gem.
+        #
+        # "Modules": [
+        #        {
+        #            "Type": "GameModule"
+        #        },
+        #        {
+        #            "Name": "Editor",
+        #            "Type": "EditorModule",
+        #            "Extends": "GameModule"
+        #        }
+        #    ]
+        #
+        #   3. Create the corresponding Editor waf_files file lists for the Editor Module in VoxelTerrain/Code folder
+        #      To match the example from step 1, create voxelterrain_editor.waf_files and voxelterrain_editor_tests.waf_files
+    )

@@ -1,0 +1,19 @@
+{
+    "auto": {
+        "Include": [
+            "Include/VoxelTerrain/VoxelTerrainBus.h"
+        ],
+        "Source": [
+            "Source/voxelTerrain.cpp",
+            "Source/voxelTerrain.h",
+            "Source/voxelTerrainChunk.cpp",
+            "Source/voxelTerrainChunk.h",
+            "Source/VoxelTerrainModule.cpp",
+            "Source/voxelTerrainRegion.cpp",
+            "Source/voxelTerrainRegion.h",
+            "Source/VoxelTerrainSystemComponent.cpp",
+            "Source/VoxelTerrainSystemComponent.h",
+            "Source/voxigenDefine.h"
+        ]
+    }
+}

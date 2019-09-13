@@ -1,0 +1,9 @@
+{
+    "description": "Configuration for Voxel",
+    "visual_studio_name": "Voxel",
+    "comment" : "",
+    "game_projects" : "Voxel",
+
+    "modules" : [
+    ]
+}

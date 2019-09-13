@@ -1,0 +1,56 @@
+{
+    "name": "voxigen",
+    "source": "@GEM@/External/voxigen",
+    "description": "Voxel handling library",
+    "includes": [
+        "include",
+        "HastyNoise",
+        "generic",
+        "imglib"
+    ],
+    "defines": [
+        "VOXIGEN_STATIC_DEFINE",
+        "VOXIGEN_USE_FILESYSTEM=1",
+        "GENERIC_DISABLE_ATTRIBUTE",
+        "IMGLIB_USE_FILESYSTEM=1",
+        "IMGLIB_EIGEN",
+        "IMGLIB_PNG"
+    ],
+    "lib_required": "True",
+    "platform": {
+        "win_x64_vs2015": {
+            "debug_libpath": [
+                "build/lib/Debug",
+                "HastyNoise/build/Debug"
+            ],
+            "debug_lib": [
+                "voxigend.lib",
+                "genericd.lib",
+                "HastyNoised.lib",
+                "imagelibd.lib"
+            ],
+            "release_libpath": [
+                "build/lib/Release",
+                "HastyNoise/build/Release"
+            ],
+            "release_lib": [
+                "voxigen.lib",
+                "generic.lib",
+                "HastyNoise.lib",
+                "imagelib.lib"
+            ]
+        },
+        "win_x64_vs2017": "@win_x64_vs2015",
+        "darwin_x64": {
+            "libpath": [
+                "lib/osx"
+            ],
+            "lib": [
+                "voxigen.a",
+                "generic.a",
+                "HastyNoise.a",
+                "imagelib.lib"
+            ]
+        }
+    }
+}
