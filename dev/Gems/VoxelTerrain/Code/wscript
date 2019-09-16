@@ -13,7 +13,7 @@ def build(bld):
         ],
         
         defines                 = ['FORCE_STANDARD_ASSERT', 'VOXIGEN_STATIC_DEFINE', 'IMGLIB_STATIC_DEFINE'],
-        use                     = ['Cry3DEngine', 'AzCore', 'AzGameFramework'],
+        use                     = ['AzCore', 'AzGameFramework', 'Cry3DEngine'],
         uselib                  = ['AWS_CPP_SDK_ALL', 'GLM', 'VOXIGEN'],
 
         # Add custom build options here

@@ -33,7 +33,6 @@
 #include "Cry_XOptimise.h"
 #include <CrySizer.h>
 #include <IMaterial.h>
-#include <STexAnim.h>
 
 #include <CryThreadSafeRendererContainer.h>
 

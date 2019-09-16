@@ -201,7 +201,7 @@
             "CharacterBoundsBus.h",
             "ColorGradingBus.h",
             "HeightmapUpdateNotificationBus.h",
-            "RTTBus.h"	    
+            "RTTBus.h"
         ],
         "Interfaces_h/AI Interfaces":
         [
@@ -254,8 +254,7 @@
             "Components/IComponentTrigger.h",
             "Components/IComponentUser.h"
         ],
-        "Common_h":
-        [
+        "Common_h": [
             "AzDXGIFormat.h",
             "SFunctor.h",
             "FunctorBaseFunction.h",

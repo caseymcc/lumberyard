@@ -17,7 +17,6 @@
 #include "StringUtils.h"                                // stristr()
 #include "../Common/Textures/TextureHelpers.h"
 #include "../Common/Textures/TextureManager.h"
-#include "STexAnim.h"
 
 #if defined(WIN32) || defined(WIN64)
 #include <direct.h>

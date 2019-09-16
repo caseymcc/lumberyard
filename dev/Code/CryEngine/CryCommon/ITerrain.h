@@ -59,7 +59,7 @@ struct AZ_DLL_EXPORT STerrainInfo
 
 #define TERRAIN_CHUNK_VERSION 30
 
-struct STerrainChunkHeader
+struct AZ_DLL_EXPORT STerrainChunkHeader
 {
     int8 nVersion;
     int8 nDummy;

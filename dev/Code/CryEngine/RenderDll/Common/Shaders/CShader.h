@@ -18,7 +18,7 @@
 #include "ShaderSerialize.h"
 #include "ShaderCache.h"
 #include "../ResFileLookupDataMan.h"
-#include "STexAnim.h"
+//#include "STexAnim.h"
 
 #include <unordered_map>
 #include <AzCore/std/parallel/mutex.h>
