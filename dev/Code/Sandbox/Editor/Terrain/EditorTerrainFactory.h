@@ -1,26 +1,26 @@
 
 #pragma once
 
-#include <ITerrain.h>
+#include <Editor/Terrain/IEditorTerrain.h>
 
 template<typename _Class, typename _Interface>
-class RegisterTerrain:public _Interface
+class RegisterEditorTerrain:public _Interface
 {
 public:
-    static ITerrain *create(const STerrainInfo &terrainInfo) { return (ITerrain *)new _Class(terrainInfo); }
+    static IEditorTerrain *create() { return (IEditorTerrain *)new _Class(); }
 
     static size_t m_terrainTypeId;
 };
 
-struct TerrainFactoryHidden;
-class TerrainFactory
+struct EditorTerrainFactoryHidden;
+class EditorTerrainFactory
 {
 private:
-    TerrainFactory() {};
+    EditorTerrainFactory() {};
 public:
-    ~TerrainFactory() {};
+    ~EditorTerrainFactory() {};
 
-    typedef ITerrain *(*FactoryFunction)(const STerrainInfo &);
+    typedef IEditorTerrain *(*FactoryFunction)();
 
     AZ_DLL_EXPORT static size_t getTerrainId(const char *name);
     
@@ -43,18 +43,18 @@ public:
         return names;
     }
 
-    static ITerrain *create(size_t id, const STerrainInfo &terrainInfo);
+    static IEditorTerrain *create(size_t id);
     AZ_DLL_EXPORT static size_t registerTerrain(const char *name, FactoryFunction func);
     template<typename _Class, typename _Interface> 
     static size_t registerTerrain()
     {
-        return registerTerrain(_Class::Name(), &RegisterTerrain<_Class, _Interface>::create);
+        return registerTerrain(_Class::Name(), &RegisterEditorTerrain<_Class, _Interface>::create);
     }
 
 private:
-    static TerrainFactoryHidden *hidden;
+    static EditorTerrainFactoryHidden *hidden;
 };
 
 template<typename _Class, typename _Interface>
-size_t RegisterTerrain<_Class, _Interface>::m_terrainTypeId=\
-TerrainFactory::registerTerrain<_Class, _Interface>();
+size_t RegisterEditorTerrain<_Class, _Interface>::m_terrainTypeId=\
+EditorTerrainFactory::registerTerrain<_Class, _Interface>();

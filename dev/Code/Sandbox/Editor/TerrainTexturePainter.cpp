@@ -84,7 +84,7 @@ struct CUndoTPElement
     {
         IEditorTerrain* terrain = GetIEditor()->GetTerrain();
 
-        if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+        if(!terrain->SupportHeightMap())
             return;
 
         CHeightmap *heightmap=(CHeightmap *)terrain;
@@ -258,7 +258,7 @@ struct CUndoTPElement
     {
         IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-        if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+        if(!terrain->SupportHeightMap())
             return;
 
         CHeightmap *heightmap=(CHeightmap *)terrain;
@@ -302,7 +302,7 @@ struct CUndoTPElement
     {
         IEditorTerrain* terrain=GetIEditor()->GetTerrain();
 
-        if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+        if(!terrain->SupportHeightMap())
             return;
 
         CHeightmap *heightmap=(CHeightmap *)terrain;
@@ -450,7 +450,8 @@ CTerrainTexturePainter::CTerrainTexturePainter()
 
     IEditorTerrain* terrain=GetIEditor()->GetTerrain();
 
-    assert(terrain->GetType()==GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"));
+    assert(terrain->SupportHeightMap());
+
     m_heightmap=(CHeightmap *)terrain;
     assert(m_heightmap);
 
@@ -717,7 +718,7 @@ void CTerrainTexturePainter::PaintLayer(CLayer* pLayer, const Vec3& center, bool
 
     IEditorTerrain* terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportHeightMap())
         return;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;

@@ -109,7 +109,7 @@ bool CTerrainLayerTexGen::UpdateSectorLayers(const QPoint& sector)
 {
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportHeightMap())
         return false;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;
@@ -168,7 +168,7 @@ bool CTerrainLayerTexGen::GenerateSectorTexture(const QPoint& sector, const QRec
 {
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportHeightMap())
         return false;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;

@@ -15,62 +15,82 @@
 #define CRYINCLUDE_EDITOR_TERRAIN_VOXELTERRAIN_H
 #pragma once
 
-#include "Editor/Terrain/IEditorTerrain.h"
 #include "CryCommon/ITerrain.h"
 #include "CryCommon/TerrainFactory.h"
+#include "Editor/Terrain/IEditorTerrain.h"
+#include "Editor/Terrain/EditorTerrainFactory.h"
 
-class EditorVoxelTerrain:public IEditorTerrain
+class EditorVoxelTerrain:
+    public RegisterEditorTerrain<EditorVoxelTerrain, IEditorTerrain>
 {
 public:
     EditorVoxelTerrain();
     EditorVoxelTerrain(const EditorVoxelTerrain &);
     virtual ~EditorVoxelTerrain();
 
+    static const char *Name() { return m_name; }
+
 //IEditorTerrain
-    virtual int GetType() { return TerrainFactory::getTerrainId("Voxel"); }
-    virtual void GetSectorsInfo(SSectorInfo &si);
+    void Init() override;
+    void Update() override;
 
-    virtual void Init();
-    virtual void Update();
+    bool SupportEditing() override { return false; }
+    bool SupportLayers() override { return false; }
+    bool SupportSerialize() override { return false; }
+    bool SupportSerializeTexture() override { return false; }
+    bool SupportHeightMap() override { return false; }
 
-//    virtual void GetSectorsInfo(SSectorInfo &si);
-    virtual uint64 GetWidth() const;
-    virtual uint64 GetHeight() const;
-    virtual uint64 GetDepth() const;
+    int GetType() override { return m_terrainTypeId; }
+    void GetSectorsInfo(SSectorInfo &si) override;
 
-    virtual float GetMaxHeight() const;
-    virtual void SetMaxHeight(float maxHeight, bool scale=false);
-
-    virtual void SetWaterLevel(float waterLevel);
-    virtual float GetWaterLevel() const;
-
-    virtual int GetUnitSize() const;
-    virtual void SetUnitSize(int unitSize);
-
-    Vec3i GetSectorSizeVector() const;
-
-    virtual QPoint FromWorld(const Vec3& wp) const;
-    virtual Vec3 ToWorld(const QPoint& pos) const;
-
-    virtual QRect WorldBoundsToRect(const AABB& worldBounds) const;
-
-    virtual void SetSurfaceTextureSize(int width, int height);
+    Vec3i GetSectorSizeVector() const override;
+    void InitSectorGrid(int numSectors) override;
+    int GetNumSectors() const override;
+    Vec3 SectorToWorld(const QPoint& sector) const override;
     
-    virtual bool IsAllocated();
-    virtual void GetMemoryUsage(ICrySizer* pSizer);
+//    virtual void GetSectorsInfo(SSectorInfo &si);
+    uint64 GetWidth() const override;
+    uint64 GetHeight() const override;
+    uint64 GetDepth() const override;
 
-    virtual void Resize(int width, int height, int unitSize, bool cleanOld=true, bool forceKeepVegetation=false);
-    virtual void Resize(int width, int height, int depth, int unitSize, bool cleanOld=true, bool forceKeepVegetation=false);
-    virtual void CleanUp();
+    float GetMaxHeight() const override;
+    void SetMaxHeight(float maxHeight, bool scale=false) override;
 
-    virtual void Serialize(CXmlArchive& xmlAr);
-    virtual void SerializeTerrain(CXmlArchive& xmlAr);
+    float GetOceanLevel() const override;
+    void SetOceanLevel(float waterLevel) override;
 
+    int GetUnitSize() const override;
+    void SetUnitSize(int unitSize) override;
+
+    QPoint FromWorld(const Vec3& wp) const override;
+    Vec3 ToWorld(const QPoint& pos) const override;
+
+    QRect WorldBoundsToRect(const AABB& worldBounds) const override;
+
+    void SetSurfaceTextureSize(int width, int height) override;
+    void EraseLayerID(uint8 id, uint8 replacementId) override;
+
+    bool IsAllocated() override;
+    void GetMemoryUsage(ICrySizer* pSizer) override;
+
+    void Resize(int width, int height, int unitSize, bool cleanOld=true, bool forceKeepVegetation=false) override;
+    void Resize(int width, int height, int depth, int unitSize, bool cleanOld=true, bool forceKeepVegetation=false) override;
+    void CleanUp() override;
+
+    void Update(bool bOnlyElevation, bool boUpdateReloadSurfacertypes) override {}
+    void UpdateSectors() override {}
+
+    void Serialize(CXmlArchive& xmlAr) override;
+    void SerializeTerrain(CXmlArchive& xmlAr) override;
+
+    void ClearTerrain() override {}
 //    virtual void ExportBlock(const QRect& rect, CXmlArchive& ar, bool bIsExportVegetation=true, std::set<int>* pLayerIds=0, std::set<int>* pSurfaceIds=0)=0;
 //    virtual QPoint ImportBlock(CXmlArchive& ar, const QPoint& newPos, bool bUseNewPos=true, float heightOffset=0.0f, bool bOnlyVegetation=false, ImageRotationDegrees rotation=ImageRotationDegrees::Rotate0)=0;
 
 //local
 private:
+    static const char *m_name;
+
     size_t m_dimX;
     size_t m_dimY;
     size_t m_dimZ;

@@ -1587,13 +1587,8 @@ void CRenderViewport::OnRender()
     //Update the terrain *after* RenderWorld otherwise RenderWorld will capture the terrain render requests and not handle them properly
     //Actual terrain heightmap data gets rendered later
     IEditorTerrain *terrain = GetIEditor()->GetTerrain();
-    if (terrain && terrain->GetType() == GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
-    {
-        CHeightmap *heightmap=(CHeightmap *)terrain;
 
-        heightmap->UpdateModSectors();
-    }
-
+    terrain->UpdateSectors();
 
     if (ITestSystem* pTestSystem = GetISystem()->GetITestSystem())
     {

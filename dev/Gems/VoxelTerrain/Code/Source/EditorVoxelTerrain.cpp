@@ -10,15 +10,33 @@
 *
 */
 // Original file Copyright Crytek GMBH or its affiliates, used under license.
-#include <StdAfx.h>
+//#include <Cry3dEngine/StdAfx.h>
+#include <CryCommon/platform_impl.h>
+#include <CryCommon/BaseTypes.h>
+#include <CryCommon/IRenderer.h>
+#include <CryCommon/I3DEngine.h>
 
-#include "Editor/GameEngine.h"
-#include "Editor/Terrain/EditorVoxelTerrain.h"
-#include "Terrain/TerrainManager.h"
+#include <QObject>
+#include <QPoint>
+#include <QRect>
+#include <QString>
 
-#include "VoxelTerrain.h"
+#include <Editor/IEditor.h>
+#include <Editor/GameEngine.h>
+#include <Editor/Include/EditorCoreAPI.h>
+#include <Editor/Util/EditorUtils.h>
+#include <Editor/Util/XmlArchive.h>
+#include <Editor/Util/Image.h>
 
-#include "QtUtil.h"
+#include "EditorVoxelTerrain.h"
+#include "voxelTerrain.h"
+
+//#include "Editor/GameEngine.h"
+//#include "Terrain/TerrainManager.h"
+
+//#include "QtUtil.h"
+
+const char *EditorVoxelTerrain::m_name="VoxelTerrain";
 
 EditorVoxelTerrain::EditorVoxelTerrain()
 {
@@ -58,7 +76,7 @@ void EditorVoxelTerrain::Init()
     {
         STerrainInfo terrainInfo;
 
-        terrainInfo.type=STerrainInfo::Voxel;
+        terrainInfo.type=TerrainFactory::getTerrainId("VoxelTerrain");
         terrainInfo.nTerrainSizeX_InUnits=m_dimX;
         terrainInfo.nTerrainSizeY_InUnits=m_dimY;
         terrainInfo.nTerrainSizeZ_InUnits=m_dimZ;
@@ -85,6 +103,33 @@ void EditorVoxelTerrain::Update()
 
 void EditorVoxelTerrain::GetSectorsInfo(SSectorInfo &si)
 {
+    ZeroStruct(si);
+
+    si.type=GetType();
+    si.unitSize=m_unitSize;
+    si.sectorSize=m_dimX;
+    si.sectorSizeY=m_dimY;
+    si.sectorSizeZ=m_dimZ;
+    si.numSectors=1;
+    si.sectorTexSize=0;
+    si.surfaceTextureSize=0;
+}
+
+void EditorVoxelTerrain::InitSectorGrid(int numSectors)
+{
+
+}
+
+int EditorVoxelTerrain::GetNumSectors() const
+{
+    return 0;
+}
+
+Vec3 EditorVoxelTerrain::SectorToWorld(const QPoint& sector) const
+{
+    Vec3 worldPoint(0, 0, 0);
+
+    return worldPoint;
 }
 
 uint64 EditorVoxelTerrain::GetWidth() const
@@ -112,12 +157,12 @@ void EditorVoxelTerrain::SetMaxHeight(float maxHeight, bool scale)
     m_maxHeight=maxHeight;
 }
 
-float EditorVoxelTerrain::GetWaterLevel() const
+float EditorVoxelTerrain::GetOceanLevel() const
 {
     return m_waterLevel;
 }
 
-void EditorVoxelTerrain::SetWaterLevel(float waterLevel)
+void EditorVoxelTerrain::SetOceanLevel(float waterLevel)
 {
     m_waterLevel=waterLevel;
 }
@@ -156,7 +201,14 @@ QRect EditorVoxelTerrain::WorldBoundsToRect(const AABB& worldBounds) const
     return QRect(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
-void EditorVoxelTerrain::SetSurfaceTextureSize(int width, int height){}
+void EditorVoxelTerrain::SetSurfaceTextureSize(int width, int height)
+{
+}
+
+void EditorVoxelTerrain::EraseLayerID(uint8 id, uint8 replacementId)
+{
+
+}
 
 //bool EditorVoxelTerrain::GetDataEx(t_hmap* pData, UINT iDestWidth, bool bSmooth, bool bNoise) const
 //{
@@ -233,7 +285,7 @@ void EditorVoxelTerrain::SerializeTerrain(CXmlArchive& xmlAr)
 
         STerrainInfo terrainInfo;
 
-        terrainInfo.type=STerrainInfo::Voxel;
+        terrainInfo.type=TerrainFactory::getTerrainId("VoxelTerrain");
         terrainInfo.nTerrainSizeX_InUnits=m_dimX;
         terrainInfo.nTerrainSizeY_InUnits=m_dimY;
         terrainInfo.nTerrainSizeZ_InUnits=m_dimZ;
@@ -249,7 +301,7 @@ void EditorVoxelTerrain::SerializeTerrain(CXmlArchive& xmlAr)
         ITerrain* terrain=renderEngine->GetITerrain();
         QString levelPath=gameEngine->GetLevelPath();
 
-        if((terrain!=nullptr)&&(terrain->GetType()!=STerrainInfo::Voxel))
+        if((terrain!=nullptr)&&(terrain->GetType()!=TerrainFactory::getTerrainId("VoxelTerrain")))
         {
             renderEngine->DeleteTerrain();
             terrain=nullptr;
@@ -267,7 +319,7 @@ void EditorVoxelTerrain::SerializeTerrain(CXmlArchive& xmlAr)
         I3DEngine *renderEngine=editor->Get3DEngine();
         ITerrain* terrain=renderEngine->GetITerrain();
         
-        if((terrain==nullptr)||(terrain->GetType()!=STerrainInfo::Voxel))
+        if((terrain==nullptr)||(terrain->GetType()!=TerrainFactory::getTerrainId("VoxelTerrain")))
             return;
         
         VoxelTerrain *voxelTerrain=(VoxelTerrain *)terrain;

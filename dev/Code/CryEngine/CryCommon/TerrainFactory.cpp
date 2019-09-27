@@ -11,15 +11,32 @@ struct TerrainInfo
 
 struct TerrainFactoryHidden
 {
+    TerrainFactoryHidden() 
+    {
+        assert(true);
+    }
+    ~TerrainFactoryHidden()
+    {
+        assert(true);
+    }
+
+    static TerrainFactoryHidden &getInstance()
+    {
+        static TerrainFactoryHidden hidden;
+        
+        return hidden;
+    }
+
     std::vector<TerrainInfo> terrains;
 };
-TerrainFactoryHidden g_terrainFactoryHidden;
+
+//TerrainFactoryHidden g_terrainFactoryHidden;
 
 size_t TerrainFactory::getTerrainId(const char *name)
 {
-    for(size_t i=0; i<g_terrainFactoryHidden.terrains.size(); ++i)
+    for(size_t i=0; i<TerrainFactoryHidden::getInstance().terrains.size(); ++i)
     {
-        if(g_terrainFactoryHidden.terrains[i].name==name)
+        if(TerrainFactoryHidden::getInstance().terrains[i].name==name)
             return i;
     }
     return std::numeric_limits<size_t>::max();
@@ -27,27 +44,27 @@ size_t TerrainFactory::getTerrainId(const char *name)
 
 const char *TerrainFactory::getTerrainName(size_t id)
 {
-    assert(id>=0&&id<g_terrainFactoryHidden.terrains.size());
+    assert(id>=0&&id<TerrainFactoryHidden::getInstance().terrains.size());
 
-    return g_terrainFactoryHidden.terrains[id].name.c_str();
+    return TerrainFactoryHidden::getInstance().terrains[id].name.c_str();
 }
 
 size_t TerrainFactory::terrainSize()
 {
-    return g_terrainFactoryHidden.terrains.size();
+    return TerrainFactoryHidden::getInstance().terrains.size();
 }
 
 ITerrain *TerrainFactory::create(size_t id, const STerrainInfo &terrainInfo)
 {
-    assert(id>=0&&id<g_terrainFactoryHidden.terrains.size());
+    assert(id>=0&&id<TerrainFactoryHidden::getInstance().terrains.size());
 
-    return g_terrainFactoryHidden.terrains[id].func(terrainInfo);
+    return TerrainFactoryHidden::getInstance().terrains[id].func(terrainInfo);
 }
 
 size_t TerrainFactory::registerTerrain(const char *name, FactoryFunction func)
 {
-    size_t id=g_terrainFactoryHidden.terrains.size();
+    size_t id=TerrainFactoryHidden::getInstance().terrains.size();
 
-    g_terrainFactoryHidden.terrains.emplace_back(name, func);
+    TerrainFactoryHidden::getInstance().terrains.emplace_back(name, func);
     return id;
 }

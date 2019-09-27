@@ -17,14 +17,16 @@ VoxelTerrain::VoxelTerrain(const STerrainInfo& TerrainInfo):
 {
     setViewRadius(255.0f);
 
-    m_whiteTextureId=GetRenderer()->EF_LoadTexture("EngineAssets/Textures/white.dds", FT_DONT_STREAM)->GetTextureID();
+//    m_whiteTextureId=GetRenderer()->EF_LoadTexture("EngineAssets/Textures/white.dds", FT_DONT_STREAM)->GetTextureID();
+    m_whiteTextureId=gEnv->pRenderer->EF_LoadTexture("EngineAssets/Textures/white.dds", FT_DONT_STREAM)->GetTextureID();
 
     {
         SInputShaderResources Res;
 
         Res.m_LMaterial.m_Opacity=1.0f;
 //        m_material=MakeSystemMaterialFromShader("VoxelTerrain", &Res);
-        m_material=Get3DEngine()->GetMaterialManager()->LoadMaterial("Materials/material_voxelterrain_default");
+//        m_material=Get3DEngine()->GetMaterialManager()->LoadMaterial("Materials/material_voxelterrain_default");
+        m_material=gEnv->p3DEngine->GetMaterialManager()->LoadMaterial("Materials/material_voxelterrain_default");
     }
 
     m_updateThreadRun=true;
@@ -71,7 +73,7 @@ bool VoxelTerrain::GetCompiledData(byte* pData, int nDataSize, std::vector<IStat
     pTerrainChunkHeader->nFlags=(eEndian==eBigEndian)?SERIALIZATION_FLAG_BIG_ENDIAN:0;
     pTerrainChunkHeader->nFlags|=SERIALIZATION_FLAG_SECTOR_PALETTES;
 
-    pTerrainChunkHeader->nFlags2=(Get3DEngine()->m_bAreaActivationInUse?TCH_FLAG2_AREA_ACTIVATION_IN_USE:0);
+    pTerrainChunkHeader->nFlags2=(gEnv->p3DEngine->IsAreaActivationInUse()?TCH_FLAG2_AREA_ACTIVATION_IN_USE:0);
     pTerrainChunkHeader->nChunkSize=nDataSize;
 
     STerrainInfo *pTerrainInfo=(STerrainInfo*)(pData+sizeof(STerrainChunkHeader));
@@ -249,7 +251,7 @@ void VoxelTerrain::DrawVisibleSectors(const SRenderingPassInfo &passInfo)
 //        }
 //    }
 
-    if(!passInfo.RenderTerrain()||!Get3DEngine()->m_bShowTerrainSurface)
+    if(!passInfo.RenderTerrain()||!gEnv->p3DEngine->GetShowTerrainSurface())
         return;
 
 //    for(RegionRendererMap::value_type pair:m_regionRenderers)
@@ -469,7 +471,7 @@ void VoxelTerrain::ResetTerrainVertBuffers()
 
 bool VoxelTerrain::LoadHandle(AZ::IO::HandleType fileHandle, int dataSize, STerrainChunkHeader* chunkHeader, STerrainInfo* terrainInfo, std::vector<struct IStatObj*>** staticObjectTable, std::vector<_smart_ptr<IMaterial> >** materialTable)
 {
-    return Load(Get3DEngine()->GetLevelFilePath(""), terrainInfo);
+    return Load(gEnv->p3DEngine->GetLevelFilePath(""), terrainInfo);
 }
 
 bool VoxelTerrain::Load(const char *levelPath, STerrainInfo* terrainInfo)

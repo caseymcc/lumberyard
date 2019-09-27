@@ -52,7 +52,7 @@ CTerrainLightGen::CTerrainLightGen
 
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportHeightMap())
         m_heightmap=nullptr;
     else
         m_heightmap=(CHeightmap *)terrain;
@@ -79,7 +79,7 @@ void CTerrainLightGen::Init(const int resolution, const bool bFullInit)
     
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportHeightMap())
         m_heightmap=nullptr;
     else
         m_heightmap=(CHeightmap *)terrain;
@@ -762,7 +762,7 @@ void CTerrainLightGen::GenerateShadowmap(const QPoint& sector, CByteImage& shado
 {
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportHeightMap())
         return;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;
@@ -791,7 +791,7 @@ void CTerrainLightGen::GenerateShadowmap(const QPoint& sector, CByteImage& shado
     }
     unsigned char* sectorImage2 = (unsigned char*)mem.GetBuffer();
 
-    Vec3 wp =heightmap->GetTerrainGrid()->SectorToWorld(sector);
+    Vec3 wp =heightmap->SectorToWorld(sector);
     //  GetIEditor()->Get3DEngine()->MakeLightMap( wp.x+0.1f,wp.y+0.1f,sectorImage2,sectorTexSize2 );
     //GetIEditor()->Get3DEngine()->MakeTerrainLightMap( wp.x,wp.y,si.sectorSize,sectorImage2,sectorTexSize2 );
     memset(sectorImage2, 255, sectorTexSize2 * sectorTexSize2 * 3);
@@ -951,7 +951,7 @@ void CTerrainLightGen::GetSubImageStretched(const float fSrcLeft, const float fS
 {
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportHeightMap())
         return;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;

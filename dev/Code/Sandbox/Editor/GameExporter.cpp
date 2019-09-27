@@ -365,6 +365,9 @@ bool CGameExporter::ExportMap(const char* pszGamePath, bool bSurfaceTexture, EEn
 {
     IEditorTerrain* terrain=GetIEditor()->GetTerrain();
 
+    if(!terrain->SupportSerializeTexture())
+        return false;
+
     GetIEditor()->ShowConsole(true);
 
     QString ctcFilename;
@@ -374,7 +377,7 @@ bool CGameExporter::ExportMap(const char* pszGamePath, bool bSurfaceTexture, EEn
     //level remove any old cover.ctc files, that will be overwritten by the resource compiler anyway.
     m_levelPak.m_pakFile.RemoveFile(ctcFilename.toUtf8().data());
 
-    if(terrain->GetType()==GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(terrain->SupportLayers())
     {
         // No need to generate texture if there are no layers or the caller does
         // not demand the texture to be generated
@@ -408,25 +411,22 @@ bool CGameExporter::ExportMap(const char* pszGamePath, bool bSurfaceTexture, EEn
 
     gEnv->p3DEngine->CloseTerrainTextureFile();
 
-    if(terrain->GetType()==GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    CHeightmap *heightmap=(CHeightmap *)terrain;
+
+    terrain->InitSectorGrid(terrain->GetNumSectors());
+
+    if(!ExportTerrainTexture(ctcFilename.toLatin1().data()))
     {
-        CHeightmap *heightmap=(CHeightmap *)terrain;
-
-        heightmap->GetTerrainGrid()->InitSectorGrid(heightmap->GetTerrainGrid()->GetNumSectors());
-
-        if(!ExportTerrainTexture(ctcFilename.toLatin1().data()))
-        {
-            return false;
-        }
-        GetIEditor()->GetTerrainManager()->GetRGBLayer()->SetNeedExportTexture(false);
-
-        CLogFile::WriteLine("Update heightmap texture file...");
-        GetIEditor()->GetTerrainManager()->GetRGBLayer()->CleanupCache();
-        heightmap->SetSurfaceTextureSize(m_settings.iExportTexWidth, m_settings.iExportTexWidth);
-        heightmap->ClearModSectors();
-
-        CLogFile::FormatLine("Terrain Texture Exported in %u seconds.", (GetTickCount()-startTime)/1000);
+        return false;
     }
+    GetIEditor()->GetTerrainManager()->GetRGBLayer()->SetNeedExportTexture(false);
+
+    CLogFile::WriteLine("Update heightmap texture file...");
+    GetIEditor()->GetTerrainManager()->GetRGBLayer()->CleanupCache();
+    terrain->SetSurfaceTextureSize(m_settings.iExportTexWidth, m_settings.iExportTexWidth);
+    terrain->ClearTerrain();
+
+    CLogFile::FormatLine("Terrain Texture Exported in %u seconds.", (GetTickCount()-startTime)/1000);
     return true;
 }
 

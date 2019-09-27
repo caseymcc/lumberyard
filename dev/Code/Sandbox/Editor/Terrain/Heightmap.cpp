@@ -162,7 +162,7 @@ protected:
 
         IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-        if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+        if(!terrain->SupportHeightMap())
             return;
 
         CHeightmap *heightmap=(CHeightmap *)terrain;
@@ -185,7 +185,7 @@ protected:
         {
             IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-            if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+            if(!terrain->SupportHeightMap())
                 return;
 
             CHeightmap *heightmap=(CHeightmap *)terrain;
@@ -241,7 +241,7 @@ protected:
 
         IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-        if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+        if(!terrain->SupportHeightMap())
             return;
 
         CHeightmap *heightmap=(CHeightmap *)terrain;
@@ -255,7 +255,7 @@ protected:
         {
             IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-            if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+            if(!terrain->SupportHeightMap())
                 return;
 
             CHeightmap *heightmap=(CHeightmap *)terrain;
@@ -3292,6 +3292,20 @@ void CHeightmap::InitSectorGrid()
     GetTerrainGrid()->InitSectorGrid(si.numSectors);
 }
 
+void CHeightmap::InitSectorGrid(int numSectors)
+{
+    m_terrainGrid->InitSectorGrid(numSectors); 
+}
+
+int CHeightmap::GetNumSectors() const
+{ 
+    return m_terrainGrid->GetNumSectors(); 
+}
+
+Vec3 CHeightmap::SectorToWorld(const QPoint& sector) const 
+{ 
+    return m_terrainGrid->SectorToWorld(sector); 
+}
 
 
 void CHeightmap::GetMemoryUsage(ICrySizer* pSizer)
@@ -3826,4 +3840,19 @@ void CHeightmap::NotifyModified(int x /*= 0*/, int y /*= 0*/, int width /*= 0*/,
     {
         GetIEditor()->GetTerrainManager()->SetModified(x, y, width, height);
     }
+}
+
+void CHeightmap::Update(bool bOnlyElevation, bool boUpdateReloadSurfacertypes)
+{
+    UpdateEngineTerrain(bOnlyElevation, boUpdateReloadSurfacertypes);
+}
+
+void CHeightmap::UpdateSectors()
+{
+    UpdateModSectors();
+}
+
+void CHeightmap::ClearTerrain()
+{
+    ClearModSectors();
 }

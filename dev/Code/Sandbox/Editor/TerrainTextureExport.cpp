@@ -320,7 +320,7 @@ void CTerrainTextureExport::ImportExport(bool bIsImport, bool bIsClipboard)
 
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportSerializeTexture())
         return;
 
     CHeightmap *heightmap =(CHeightmap *)terrain;
@@ -373,7 +373,7 @@ void CTerrainTextureExport::OnExport()
 
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportSerializeTexture())
         return;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;
@@ -396,7 +396,7 @@ void CTerrainTextureExport::OnImport()
 
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportSerializeTexture())
         return;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;
@@ -429,7 +429,7 @@ void CTerrainTextureExport::OnChangeResolutionBtn()
 
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportSerializeTexture())
         return;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;

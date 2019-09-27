@@ -517,7 +517,7 @@ void CTerrainModifyTool::Paint()
 
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportHeightMap())
         return;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;

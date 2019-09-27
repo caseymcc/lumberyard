@@ -32,16 +32,8 @@ struct SNoiseParams;
 class CTerrainGrid;
 struct SEditorPaintBrush;
 
-// Interface to access CHeightmap from gems
-class IHeightmap
-{
-public:
-    virtual void UpdateEngineTerrain(int x1, int y1, int width, int height, bool bElevation, bool bInfoBits) = 0;
-    virtual void RecordAzUndoBatchTerrainModify(AZ::u32 x, AZ::u32 y, AZ::u32 width, AZ::u32 height) = 0;
-};
-
 // Editor data structure to keep the heights, detail layer information/holes, terrain texture
-class CHeightmap : public IEditorTerrain, public IHeightmap
+class CHeightmap : public IHeightmap
 {
 public:
     CHeightmap();
@@ -52,6 +44,10 @@ public:
 
     virtual void Init() { InitTerrain(); }
     virtual void Update() { UpdateEngineTerrain(); }
+
+    bool SupportLayers() override { return true; }
+    bool SupportSerialize() override { return true; }
+    bool SupportSerializeTexture() override { return true; }
 
     uint64 GetWidth() const { return m_iWidth; }
     uint64 GetHeight() const { return m_iHeight; }
@@ -114,6 +110,10 @@ public:
     // Terrain Grid functions.
     //////////////////////////////////////////////////////////////////////////
     void InitSectorGrid();
+    void InitSectorGrid(int numSectors) override;
+    int GetNumSectors() const override;
+    Vec3 SectorToWorld(const QPoint& sector) const override;
+
     CTerrainGrid* GetTerrainGrid() const { return m_terrainGrid.get(); }
 
     //////////////////////////////////////////////////////////////////////////
@@ -157,9 +157,9 @@ public:
     void MarkUsedLayerIds(bool bFree[CLayer::e_undefined]) const;
 
     // Hold / fetch
-    void Fetch();
-    void Hold();
-    bool Read(QString strFileName);
+    void Fetch() override;
+    void Hold() override;
+    bool Read(QString strFileName) override;
 
     // (Re)Allocate / deallocate
     void Resize(int iWidth, int iHeight, int unitSize, bool bCleanOld = true, bool bForceKeepVegetation = false);
@@ -169,24 +169,24 @@ public:
     // Importing / exporting
     void Serialize(CXmlArchive& xmlAr);
     void SerializeTerrain(CXmlArchive& xmlAr);
-    void SaveImage(LPCSTR pszFileName) const;
+    void SaveImage(LPCSTR pszFileName) const override;
 
-    void LoadImage(const QString& fileName);
-    void LoadASC(const QString& fileName);
-    void LoadBT(const QString& fileName);
-    void LoadTIF(const QString& fileName);
+    void LoadImage(const QString& fileName) override;
+    void LoadASC(const QString& fileName) override;
+    void LoadBT(const QString& fileName) override;
+    void LoadTIF(const QString& fileName) override;
 
-    void SaveASC(const QString& fileName);
-    void SaveBT(const QString& fileName);
-    void SaveTIF(const QString& fileName);
+    void SaveASC(const QString& fileName) override;
+    void SaveBT(const QString& fileName) override;
+    void SaveTIF(const QString& fileName) override;
 
     //! Save heightmap to 16-bit image file format (PGM, ASC, BT)
-    void SaveImage16Bit(const QString& fileName);
+    void SaveImage16Bit(const QString& fileName) override;
 
     //! Save heightmap in RAW format.
-    void    SaveRAW(const QString& rawFile);
+    void    SaveRAW(const QString& rawFile) override;
     //! Load heightmap from RAW format.
-    void    LoadRAW(const QString& rawFile);
+    void    LoadRAW(const QString& rawFile) override;
 
     //! Return the heightmap as type CImageEx
     //! The image will be BGR format in grayscale
@@ -197,20 +197,20 @@ public:
     std::shared_ptr<CFloatImage> GetHeightmapFloatImage(bool scaleValues, ImageRotationDegrees rotationAmount) const;
 
     // Actions
-    void Smooth();
-    void Smooth(CFloatImage& hmap, const QRect& rect) const;
+    void Smooth() override;
+    void Smooth(CFloatImage& hmap, const QRect& rect) const override;
 
-    void Noise();
-    void Normalize();
-    void Invert();
-    void MakeIsle();
-    void SmoothSlope();
-    void Randomize();
-    void LowerRange(float fFactor);
-    void Flatten(float fFactor);
-    void GenerateTerrain(const SNoiseParams& sParam);
-    void Clear(bool bClearLayerBitmap = true);
-    void InitHeight(float fHeight);
+    void Noise() override;
+    void Normalize() override;
+    void Invert() override;
+    void MakeIsle() override;
+    void SmoothSlope() override;
+    void Randomize() override;
+    void LowerRange(float fFactor) override;
+    void Flatten(float fFactor) override;
+    void GenerateTerrain(const SNoiseParams& sParam) override;
+    void Clear(bool bClearLayerBitmap = true) override;
+    void InitHeight(float fHeight) override;
 
     // Drawing
     void DrawSpot(unsigned long iX, unsigned long iY,
@@ -286,6 +286,10 @@ public:
     void SetUseTerrain(bool useTerrain);
     bool GetUseTerrain();
 
+    void Update(bool bOnlyElevation=true, bool boUpdateReloadSurfacertypes=true) override;
+    void UpdateSectors() override;
+
+    void ClearTerrain() override;
 private:
     void CopyFrom(t_hmap* prevHeightmap, LayerWeight* prevWeightmap, int prevSize);
     void CopyFromInterpolate(t_hmap* prevHeightmap, LayerWeight* prevWeightmap, int resolution, int prevUnitSize);

@@ -15,6 +15,9 @@
 #define CRYINCLUDE_EDITOR_TERRAIN_ITERRAIN_H
 #pragma once
 
+#include "Noise.h"
+//#include "CryCommon/Cry_Vector3.h"
+
 // Note: This type is used by the Terrain system; it isn't really a heightmap thing
 struct SSectorInfo
 {
@@ -49,12 +52,21 @@ public:
     virtual void Init()=0;
     virtual void Update()=0;
 
+    //options
+    virtual bool SupportEditing()=0;
+    virtual bool SupportLayers()=0;
+    virtual bool SupportSerialize()=0;
+    virtual bool SupportSerializeTexture()=0;
+    virtual bool SupportHeightMap()=0;
+
     virtual int GetType()=0;
     //! Returns information about sectors on terrain.
     //! @param si Structure filled with queried data.
     virtual void GetSectorsInfo(SSectorInfo &si)=0;
-
     virtual Vec3i GetSectorSizeVector() const=0;
+    virtual void InitSectorGrid(int numSectors)=0;
+    virtual int GetNumSectors() const=0;
+    virtual Vec3 SectorToWorld(const QPoint& sector) const=0;
 
     virtual uint64 GetWidth() const=0;
     virtual uint64 GetHeight() const=0;
@@ -83,6 +95,9 @@ public:
 
     //! Set size of current surface texture.
     virtual void SetSurfaceTextureSize(int width, int height)=0;
+
+//Layers
+    virtual void EraseLayerID(uint8 id, uint8 replacementId)=0;
 
 //    //! Retrieve heightmap data with optional transformations
 //    //! @param pData Pointer to float array that will hold the output; it must be at least iDestWidth*iDestWidth elements large
@@ -122,15 +137,74 @@ public:
     virtual void Resize(int width, int height, int depth, int unitSize, bool cleanOld=true, bool forceKeepVegetation=false)=0;
     virtual void CleanUp()=0;
 
+    virtual void Update(bool bOnlyElevation, bool boUpdateReloadSurfacertypes)=0;
+    virtual void UpdateSectors()=0;
+
     // Importing / exporting
     virtual void Serialize(CXmlArchive& xmlAr)=0;
     virtual void SerializeTerrain(CXmlArchive& xmlAr)=0;
+
+    virtual void ClearTerrain()=0;
 
 //    virtual void ExportBlock(const QRect& rect, CXmlArchive& ar, bool bIsExportVegetation=true, std::set<int>* pLayerIds=0, std::set<int>* pSurfaceIds=0)=0;
 //    //! Import terrain block, return offset of block to new position.
 //    virtual QPoint ImportBlock(CXmlArchive& ar, const QPoint& newPos, bool bUseNewPos=true, float heightOffset=0.0f, bool bOnlyVegetation=false, ImageRotationDegrees rotation=ImageRotationDegrees::Rotate0)=0;
 
 private:
+};
+
+class IEditableTerrain:public IEditorTerrain
+{
+public:
+    ~IEditableTerrain() {}
+
+    bool SupportEditing() override { return true; }
+
+    virtual void LoadImage(const QString& fileName)=0;
+    virtual void LoadASC(const QString& fileName)=0;
+    virtual void LoadBT(const QString& fileName)=0;
+    virtual void LoadTIF(const QString& fileName)=0;
+    virtual void LoadRAW(const QString& rawFile)=0;
+
+    virtual void SaveImage(LPCSTR pszFileName) const=0;
+    virtual void SaveASC(const QString& fileName)=0;
+    virtual void SaveBT(const QString& fileName)=0;
+    virtual void SaveTIF(const QString& fileName)=0;
+    virtual void SaveRAW(const QString& rawFile)=0;
+    virtual void SaveImage16Bit(const QString& fileName)=0;
+
+    virtual bool GetPreviewBitmap(DWORD* pBitmapData, int width, bool bSmooth=true, bool bNoise=true, QRect* pUpdateRect=NULL, bool bShowOcean=false, bool bUseScaledRange=true)=0;
+
+    virtual void Smooth()=0;
+    virtual void Smooth(CFloatImage& hmap, const QRect& rect) const=0;
+
+    virtual void Noise()=0;
+    virtual void Normalize()=0;
+    virtual void Invert()=0;
+    virtual void MakeIsle()=0;
+    virtual void SmoothSlope()=0;
+    virtual void Randomize()=0;
+    virtual void LowerRange(float fFactor)=0;
+    virtual void Flatten(float fFactor)=0;
+    virtual void GenerateTerrain(const SNoiseParams& sParam)=0;
+    virtual void Clear(bool bClearLayerBitmap=true)=0;
+    virtual void InitHeight(float fHeight)=0;
+
+    virtual void Fetch()=0;
+    virtual void Hold()=0;
+    virtual bool Read(QString strFileName)=0;
+};
+
+// Interface to access CHeightmap from gems
+class IHeightmap:public IEditableTerrain
+{
+public:
+    ~IHeightmap() {}
+
+    bool SupportHeightMap() override { return true; }
+
+    virtual void UpdateEngineTerrain(int x1, int y1, int width, int height, bool bElevation, bool bInfoBits)=0;
+    virtual void RecordAzUndoBatchTerrainModify(AZ::u32 x, AZ::u32 y, AZ::u32 width, AZ::u32 height)=0;
 };
 
 #endif // CRYINCLUDE_EDITOR_TERRAIN_ITERRAIN_H

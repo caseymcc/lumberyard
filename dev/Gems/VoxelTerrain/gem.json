@@ -10,6 +10,11 @@
     "Modules": [
         {
             "Type": "GameModule"
+        },
+        {
+            "Name": "Editor",
+            "Type": "EditorModule",
+            "Extends": "GameModule"
         }
     ]
 }

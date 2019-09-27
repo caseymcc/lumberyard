@@ -59,7 +59,7 @@ void VoxelTerrainChunk::drawText(Vec3 pos, const char* format, ...)
 
     va_list args;
     va_start(args, format);
-    GetRenderer()->GetIRenderAuxGeom()->RenderText(pos, textInfo, format, args);
+    gEnv->pRenderer->GetIRenderAuxGeom()->RenderText(pos, textInfo, format, args);
     va_end(args);
 }
 
@@ -89,15 +89,15 @@ void VoxelTerrainChunk::RenderMesh(const SRendParams &rendParams, const SRenderi
     drawText(m_currentBox.min, "(%d,%d,%d) %d", chunkIndex.x, chunkIndex.y, chunkIndex.z, m_chunkHandle->empty()?1:0);
     if(!m_meshReady)
     {
-        GetRenderer()->GetIRenderAuxGeom()->DrawAABB(m_currentBox, false, ColorB(255, 0, 0, 255), eBBD_Faceted);
+        gEnv->pRenderer->GetIRenderAuxGeom()->DrawAABB(m_currentBox, false, ColorB(255, 0, 0, 255), eBBD_Faceted);
         //build mesh
         return;
     }
 
-    GetRenderer()->GetIRenderAuxGeom()->DrawAABB(m_currentBox, false, ColorB(255, 0, 0, 128), eBBD_Faceted);
+    gEnv->pRenderer->GetIRenderAuxGeom()->DrawAABB(m_currentBox, false, ColorB(255, 0, 0, 128), eBBD_Faceted);
     
-
-    CRenderObject *renderObject=GetIdentityCRenderObject(passInfo.ThreadID());
+    CRenderObject* renderObject=gEnv->pRenderer->EF_GetObject_Temp(passInfo.ThreadID());
+//    CRenderObject *renderObject=GetIdentityCRenderObject(passInfo.ThreadID());
 
     if(!renderObject)
         return;
@@ -221,7 +221,7 @@ bool VoxelTerrainChunk::buildMesh(const SRenderingPassInfo &passInfo, IGeneralMe
         vertex.st.y=0.0f;
     }
 
-    m_renderMesh=GetRenderer()->CreateRenderMeshInitialized(
+    m_renderMesh=gEnv->pRenderer->CreateRenderMeshInitialized(
         vertexBuffer->vertices, vertexBuffer->verticesCount, eVF_P3F_C4B_T2F,
         vertexBuffer->indices, vertexBuffer->indicesCount,
         prtTriangleList,

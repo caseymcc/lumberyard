@@ -1,5 +1,29 @@
 
 def build(bld):
+    bld.CryEngineStaticLibrary(
+        target              = 'VoxelTerrainLib',
+        
+        disable_pch             = True,
+        file_list               = ['voxelterrainlib.waf_files'],
+        test_all_file_list      = ['voxelterrainlib_tests.waf_files'],
+
+        features                = ['qt5'],
+        vs_filter               = 'Gems',
+
+        includes                = ['.',
+            bld.Path('Code/CryEngine'),
+            bld.Path('Code/CryEngine/Cry3DEngine'),
+            bld.Path('Code/Sandbox'),
+            bld.Path('Code/Sandbox/Editor'),
+            bld.Path('Code/Sandbox/Editor/Include'),
+            bld.Path('Code/Sandbox/Plugins/EditorCommon')
+        ],
+        
+        defines                 = ['FORCE_STANDARD_ASSERT'],
+        use                     = ['AzCore', 'AzGameFramework', 'Cry3DEngine', 'EditorCommon', 'EditorCore', 'EditorLib'],
+        uselib                  = ['AWS_CPP_SDK_ALL', 'GLM', 'VOXIGEN', 'HASTYNOISE', 'QT5CORE', 'QT5GUI', 'QT5WIDGETS']
+    )
+
     bld.DefineGem(
         # General
         disable_pch             = True,
@@ -9,41 +33,35 @@ def build(bld):
         test_all_file_list      = ['voxelterrain_tests.waf_files'],
 
         includes                = ['.',
-            bld.Path('Code/CryEngine/Cry3DEngine')
+            bld.Path('Code/CryEngine'),
+            bld.Path('Code/CryEngine/Cry3DEngine'),
+            bld.Path('Code/Sandbox'),
+            bld.Path('Code/Sandbox/Editor'),
+            bld.Path('Code/Sandbox/Editor/Include'),
+            bld.Path('Code/Sandbox/Plugins/EditorCommon')
         ],
         
-        defines                 = ['FORCE_STANDARD_ASSERT', 'VOXIGEN_STATIC_DEFINE', 'IMGLIB_STATIC_DEFINE'],
-        use                     = ['AzCore', 'AzGameFramework', 'Cry3DEngine'],
-        uselib                  = ['AWS_CPP_SDK_ALL', 'GLM', 'VOXIGEN'],
+        defines                 = ['FORCE_STANDARD_ASSERT'],
+        use                     = ['AzCore', 'AzGameFramework', 'Cry3DEngine', 'VoxelTerrainLib'],
+        uselib                  = ['AWS_CPP_SDK_ALL', 'GLM', 'VOXIGEN', 'HASTYNOISE'],
 
-        # Add custom build options here
-        
-        # To add an editor module to your gem:
-        #
-        #   1. declare editor module settings here in a field called 'editor'.
-        #
-        # Editor = dict(
-        #    file_list           = ['voxelterrain_editor.waf_files'],
-        #    test_all_file_list  = ['voxelterrain_editor_tests.waf_files'],
-        #
-        #    and any additional options to override for the editor module, for example, 
-        #    defines             = ["EDITOR_MODULE"],
-        #    
-        # )
-        #
-        #   2. Add the Editor Module to the gem's gem.json modules list in the gem.json file for this gem.
-        #
-        # "Modules": [
-        #        {
-        #            "Type": "GameModule"
-        #        },
-        #        {
-        #            "Name": "Editor",
-        #            "Type": "EditorModule",
-        #            "Extends": "GameModule"
-        #        }
-        #    ]
-        #
-        #   3. Create the corresponding Editor waf_files file lists for the Editor Module in VoxelTerrain/Code folder
-        #      To match the example from step 1, create voxelterrain_editor.waf_files and voxelterrain_editor_tests.waf_files
+         Editor = dict(
+            disable_pch         = True,
+            file_list           = ['voxelterrain_editor.waf_files'],
+            test_all_file_list  = ['voxelterrain_editor_tests.waf_files'],
+            
+
+            includes = ['.',
+                bld.Path('Code/CryEngine'),
+                bld.Path('Code/CryEngine/Cry3DEngine'),
+                bld.Path('Code/Sandbox'),
+                bld.Path('Code/Sandbox/Editor'),
+                bld.Path('Code/Sandbox/Editor/Include'),
+                bld.Path('Code/Sandbox/Plugins/EditorCommon')
+            ],
+
+            defines = ['FORCE_STANDARD_ASSERT', 'EDITOR_MODULE'],
+            use = ['AzCore', 'AzGameFramework', 'Cry3DEngine', 'VoxelTerrainLib'],
+            uselib = ['AWS_CPP_SDK_ALL', 'QT5CORE', 'QT5GUI', 'QT5WIDGETS']
+        )
     )

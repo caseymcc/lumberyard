@@ -12,10 +12,10 @@
 #include <Cry3DEngineBase.h>
 
 class VoxelTerrainRegion;
-class VoxelTerrainRegion;
+//class VoxelTerrainRegion;
 
 class VoxelTerrainChunk:
-public Cry3DEngineBase,
+//public Cry3DEngineBase,
 public IShadowCaster
 {
 public:

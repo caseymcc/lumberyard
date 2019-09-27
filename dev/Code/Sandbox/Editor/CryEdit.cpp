@@ -3889,9 +3889,8 @@ bool CCryEditApp::UserExportToGame(bool bExportTexture, bool bReloadTerrain, boo
         CGameExporter gameExporter;
 
         IEditorTerrain *terrain=GetIEditor()->GetTerrain();
-        size_t cterrainId=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain");
 
-        if((terrain->GetType()==cterrainId) && (bExportTexture))
+        if((terrain->SupportSerializeTexture()) && (bExportTexture))
         {
             static UINT iWidth = 4096; // 4096x4096 is default
             CDimensionsDialog   dimensionDialog;
@@ -6944,7 +6943,7 @@ void CCryEditApp::OnTerrainExportblock()
 {
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportSerialize())
         return;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;
@@ -6986,7 +6985,7 @@ void CCryEditApp::OnTerrainImportblock()
 {
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportSerialize())
         return;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;
@@ -7646,11 +7645,6 @@ void CCryEditApp::OnTerrainResizeterrain()
 
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
-        return;
-
-    CHeightmap *heightmap=(CHeightmap *)terrain;
-
     CNewLevelDialog dlg(AzToolsFramework::GetActiveWindow());
     dlg.SetTerrainResolution(terrain->GetWidth());
     dlg.SetTerrainUnits(terrain->GetUnitSize());
@@ -7660,7 +7654,7 @@ void CCryEditApp::OnTerrainResizeterrain()
         return;
     }
 
-    heightmap->ClearModSectors();
+    terrain->ClearTerrain();
 
     CUndoManager* undoMgr = GetIEditor()->GetUndoManager();
     if (undoMgr)

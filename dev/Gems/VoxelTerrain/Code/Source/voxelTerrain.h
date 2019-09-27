@@ -3,6 +3,8 @@
 #pragma once
 
 #include <ISerialize.h>
+#include <IRenderer.h>
+#include <I3DEngine.h>
 #include <IEngineTerrain.h>
 #include <TerrainFactory.h>
 
@@ -15,8 +17,8 @@
 #include <thread>
 
 class VoxelTerrain:
-    public RegisterTerrain<VoxelTerrain, IEngineTerrain>,
-    public Cry3DEngineBase
+    public RegisterTerrain<VoxelTerrain, IEngineTerrain>//,
+    //public Cry3DEngineBase
 {
 public:
     typedef std::unordered_map<voxigen::RegionHash, VoxelTerrainRegion> RegionRendererMap;

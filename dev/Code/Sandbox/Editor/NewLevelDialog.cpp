@@ -22,6 +22,8 @@
 #include <QFileInfo>
 #include <QtWidgets/QPushButton>
 
+#include <TerrainFactory.h>
+
 // Folder in which levels are stored
 static const char kNewLevelDialog_LevelsFolder[] = "Levels";
 
@@ -94,7 +96,9 @@ void CNewLevelDialog::UpdateData(bool fromUi)
             m_useTerrain = ui->USE_TERRAIN->isChecked();
         }
         m_ilevelFolders = ui->LEVEL_FOLDERS->currentIndex();
-        m_terrainType =ui->TERRAIN_TYPE->currentIndex();
+        std::string terrainName=ui->TERRAIN_TYPE->currentText().toStdString();
+        m_terrainType=GetIEditor()->Get3DEngine()->GetTerrainId(terrainName.c_str());
+//        m_terrainType=ui->TERRAIN_TYPE->currentIndex();
         m_terrainSizeX=ui->TERRAIN_SIZE_X->text().toInt();
         m_terrainSizeY=ui->TERRAIN_SIZE_Y->text().toInt();
         m_terrainSizeZ=ui->TERRAIN_SIZE_Z->text().toInt();
@@ -107,7 +111,10 @@ void CNewLevelDialog::UpdateData(bool fromUi)
         ui->LEVEL_FOLDERS->setCurrentText(m_levelFolders);
         ui->USE_TERRAIN->setChecked(m_useTerrain);
         ui->LEVEL_FOLDERS->setCurrentIndex(m_ilevelFolders);
-        ui->TERRAIN_TYPE->setCurrentIndex(m_terrainType);
+
+        std::string terrainName=GetIEditor()->Get3DEngine()->GetTerrainName(m_terrainType);
+        ui->TERRAIN_TYPE->setCurrentText(QString::fromStdString(terrainName));
+//        ui->TERRAIN_TYPE->setCurrentIndex(m_terrainType);
         ui->TERRAIN_SIZE_X->setText(QString::number(m_terrainSizeX));
         ui->TERRAIN_SIZE_Y->setText(QString::number(m_terrainSizeY));
         ui->TERRAIN_SIZE_Z->setText(QString::number(m_terrainSizeZ));
@@ -125,9 +132,10 @@ void CNewLevelDialog::OnInitDialog()
     m_useTerrain = true;
 
     // Inititialize terrain values.
+    std::vector<std::string> terrianNames=GetIEditor()->Get3DEngine()->GetTerrainNames();
 
-    ui->TERRAIN_TYPE->addItem("Default");
-    ui->TERRAIN_TYPE->addItem("Voxel");
+    for(std::string &name:terrianNames)
+        ui->TERRAIN_TYPE->addItem(name.c_str());
     ui->TERRAIN_TYPE->setCurrentIndex(m_terrainType);
 
     int i;

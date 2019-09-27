@@ -701,6 +701,8 @@ public:
     virtual void CreateDecal(const CryEngineDecalInfo& Decal);
     virtual bool ReadMacroTextureFile(const char* filepath, MacroTextureConfiguration& configuration) const override;
     size_t GetTerrainId(const char *name) const override;
+    const char *GetTerrainName(size_t id) const override;
+    size_t TerrainTypeSize() const override;
     virtual float GetTerrainElevation(float x, float y, int nSID = GetDefSID());
     virtual float GetTerrainElevation3D(Vec3 vPos);
     virtual float GetTerrainZ(int x, int y);

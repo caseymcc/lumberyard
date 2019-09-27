@@ -389,7 +389,7 @@ void CTerrainMoveTool::Move(bool isCopy, bool bOnlyVegetation, bool bOnlyTerrain
         return;
     }
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportHeightMap())
         return;
 
     CHeightmap *pHeightmap=(CHeightmap *)terrain;

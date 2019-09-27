@@ -8,7 +8,7 @@
 
 class VoxelTerrain;
 class VoxelTerrainRegion:
-public Cry3DEngineBase,
+//public Cry3DEngineBase,
 public IShadowCaster
 {
 public:

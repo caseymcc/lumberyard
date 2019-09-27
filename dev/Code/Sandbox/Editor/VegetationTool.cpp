@@ -360,7 +360,7 @@ bool CVegetationTool::MouseCallback(CViewport* view, EMouseEvent event, QPoint& 
 {
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportHeightMap())
         return false;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;

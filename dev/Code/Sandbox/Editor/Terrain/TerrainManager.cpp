@@ -25,6 +25,9 @@
 #include "ITerrain.h"
 #include "Terrain/TerrainConverter.h"
 #include "Terrain/Heightmap.h"
+#include "Terrain/EditorTerrainFactory.h"
+
+#include <CryCommon/TerrainFactory.h>
 
 namespace {
     const char* terrainFile="terrain.dat";
@@ -175,12 +178,7 @@ void CTerrainManager::ReloadSurfaceTypes(bool bUpdateEngineTerrain, bool bUpdate
 
     if (bUpdateHeightmap && gEnv->p3DEngine->GetITerrain() && bUpdateEngineTerrain)
     {
-        if(m_terrain->GetType()==GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
-        {
-            CHeightmap *heightmap=(CHeightmap *)m_terrain;
-
-            heightmap->UpdateEngineTerrain(false, false);
-        }
+        m_terrain->Update(false, false);
     }
 }
 
@@ -228,10 +226,8 @@ CLayer* CTerrainManager::FindLayerByLayerId(const uint32 dwLayerId) const
 //////////////////////////////////////////////////////////////////////////
 void CTerrainManager::RemoveLayer(CLayer* layer)
 {
-    if(m_terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!m_terrain->SupportLayers())
         return;
-
-    CHeightmap *heightmap=(CHeightmap *)m_terrain;
 
     assert(m_layers.size() > 1 && "Removing last layer of terrain");
 
@@ -251,7 +247,7 @@ void CTerrainManager::RemoveLayer(CLayer* layer)
                     break;
                 }
             }
-            heightmap->EraseLayerID(id, defaultLayer->GetCurrentLayerId());
+            m_terrain->EraseLayerID(id, defaultLayer->GetCurrentLayerId());
         }
     }
 
@@ -265,10 +261,8 @@ void CTerrainManager::RemoveLayer(CLayer* layer)
 //////////////////////////////////////////////////////////////////////////
 void CTerrainManager::SwapLayers(int layer1, int layer2)
 {
-    if(m_terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!m_terrain->SupportLayers())
         return;
-
-    CHeightmap *heightmap=(CHeightmap *)m_terrain;
 
     assert(layer1 >= 0 && layer1 < m_layers.size());
     assert(layer2 >= 0 && layer2 < m_layers.size());
@@ -289,7 +283,7 @@ void CTerrainManager::SwapLayers(int layer1, int layer2)
         CSurfaceType& surfaceType1 = *m_surfaceTypes[st1];
         CSurfaceType& surfaceType2 = *m_surfaceTypes[st2];
         std::swap(surfaceType1, surfaceType2);
-        heightmap->UpdateEngineTerrain();
+        m_terrain->Update();
     }
 }
 
@@ -507,13 +501,13 @@ void CTerrainManager::SerializeTerrain(CXmlArchive& xmlAr)
     if (xmlAr.bLoading)
     {
         XmlNodeRef terrain=xmlAr.root;
-        int type=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain");
+        int type;
 
         terrain->getAttr("Type", type);
         SetTerrainType(type);
 
         m_terrain->Serialize(xmlAr);
-        if(type==GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+        if(m_terrain->SupportSerializeTexture())
         {
             // Surface Types ///////////////////////////////////////////////////////
             {
@@ -542,8 +536,6 @@ void CTerrainManager::SerializeTerrain(CXmlArchive& xmlAr)
                 ConvertLayersToRGBLayer();
             }
         }
-        else
-            m_terrain->SerializeTerrain(xmlAr);
 
     }
     else
@@ -557,7 +549,7 @@ void CTerrainManager::SerializeTerrain(CXmlArchive& xmlAr)
         m_terrain->Serialize(xmlAr);
         m_terrain->SerializeTerrain(xmlAr);
 
-        if(m_terrain->GetType()==GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+        if(m_terrain->SupportSerializeTexture())
         {
             // Surface Types
             SerializeSurfaceTypes(xmlAr);
@@ -570,14 +562,15 @@ void CTerrainManager::SerializeTerrain(CXmlArchive& xmlAr)
 //////////////////////////////////////////////////////////////////////////
 void CTerrainManager::SerializeTexture(CXmlArchive& xmlAr)
 {
-    if(m_terrain->GetType()==GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(m_terrain->SupportLayers())
         GetRGBLayer()->Serialize(xmlAr.root, xmlAr.bLoading);
 }
 
 
 //////////////////////////////////////////////////////////////////////////
-void    CTerrainManager::GetTerrainMemoryUsage(ICrySizer* pSizer)
+void CTerrainManager::GetTerrainMemoryUsage(ICrySizer* pSizer)
 {
+    if(m_terrain->SupportLayers())
     {
         SIZER_COMPONENT_NAME(pSizer, "Layers");
 
@@ -597,6 +590,7 @@ void    CTerrainManager::GetTerrainMemoryUsage(ICrySizer* pSizer)
         m_terrain->GetMemoryUsage(pSizer);
     }
 
+    if(m_terrain->SupportLayers())
     {
         SIZER_COMPONENT_NAME(pSizer, "RGBLayer");
 
@@ -619,9 +613,13 @@ void CTerrainManager::SetTerrainType(int type)
 
         if(type == GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
             m_terrain=new CHeightmap();
-//        case STerrainInfo::Voxel:
-//            m_terrain=new EditorVoxelTerrain();
-//            break;
+        else
+        {
+            std::string name=GetIEditor()->Get3DEngine()->GetTerrainName(type);
+            int editorType=EditorTerrainFactory::getTerrainId(name);
+
+            m_terrain=EditorTerrainFactory::create(editorType);
+        }
     }
 }
 
@@ -653,36 +651,13 @@ bool CTerrainManager::GetUseTerrain()
 
 void CTerrainManager::GetSectorsInfo(SSectorInfo& si)
 {
-    if(m_terrain->GetType()==GetIEditor()->Get3DEngine()->GetTerrainId("Voxel"))
-    {
-        ZeroStruct(si);
-
-        si.type=m_terrain->GetType();
-        si.unitSize=m_terrain->GetUnitSize();
-        si.sectorSize=m_terrain->GetWidth();
-        si.sectorSizeY=m_terrain->GetHeight();
-        si.sectorSizeZ=m_terrain->GetDepth();
-        si.numSectors=1;
-        si.sectorTexSize=0;
-        si.surfaceTextureSize=0;
-    }
-    else
-        m_terrain->GetSectorsInfo(si);
+    m_terrain->GetSectorsInfo(si);
 }
 
 //////////////////////////////////////////////////////////////////////////
 void CTerrainManager::ResetTerrain()
 {
-    ////////////////////////////////////////////////////////////////////////
-    // Reset Heightmap
-    ////////////////////////////////////////////////////////////////////////
-
-    if(m_terrain->GetType()==GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
-    {
-        CHeightmap *heightmap=(CHeightmap *)m_terrain;
-
-        heightmap->ClearModSectors();
-    }
+    m_terrain->ClearTerrain();
     m_terrain->SetOceanLevel(16);
     SetTerrainSize(1024, 2);
     m_terrain->SetMaxHeight(1024);
@@ -691,7 +666,7 @@ void CTerrainManager::ResetTerrain()
 //////////////////////////////////////////////////////////////////////////
 CRGBLayer* CTerrainManager::GetRGBLayer()
 {
-    if(m_terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(m_terrain->SupportLayers())
         return nullptr;
 
     CHeightmap *heightmap=(CHeightmap *)m_terrain;
@@ -739,9 +714,9 @@ bool CTerrainManager::Load()
 //////////////////////////////////////////////////////////////////////////
 void CTerrainManager::SaveTexture()
 {
-    if(m_terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!m_terrain->SupportSerializeTexture())
     {
-        CLogFile::WriteLine("Not implemented!");
+        CLogFile::WriteLine("Not supported!");
         return;
     }
 
@@ -767,6 +742,12 @@ void CTerrainManager::SaveTexture()
 //////////////////////////////////////////////////////////////////////////
 bool CTerrainManager::LoadTexture()
 {
+    if(!m_terrain->SupportSerializeTexture())
+    {
+        CLogFile::WriteLine("Not supported!");
+        return false;
+    }
+
     QString filename = GetIEditor()->GetLevelDataFolder() + kTerrainTextureFile;
     XmlNodeRef root = XmlHelpers::LoadXmlFromFile(filename.toUtf8().data());
     if (root)

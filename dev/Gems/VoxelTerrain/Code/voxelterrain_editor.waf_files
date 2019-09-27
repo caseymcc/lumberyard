@@ -1,9 +1,10 @@
 {
     "auto": {
         "Include": [
-            "Include/VoxelTerrain/VoxelTerrainBus.h"
         ],
         "Source": [
+            "Source/VoxelTerrainEditorModule.cpp",
+            "Source/VoxelTerrainEditorModule.h",
             "Source/VoxelTerrainModule.cpp",
             "Source/VoxelTerrainModule.h",
             "Source/VoxelTerrainSystemComponent.cpp",

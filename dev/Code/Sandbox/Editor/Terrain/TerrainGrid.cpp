@@ -144,7 +144,7 @@ int CTerrainGrid::LockSectorTexture(const QPoint& sector, const uint32 dwTexture
 {
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportHeightMap())
         return 0;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;

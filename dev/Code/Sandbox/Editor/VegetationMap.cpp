@@ -1323,7 +1323,7 @@ bool CVegetationMap::PaintBrush(QRect& rc, bool bCircle, CVegetationObject* obje
 {
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportHeightMap())
         return false;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;
@@ -2526,7 +2526,7 @@ void CVegetationMap::GenerateShadowMap(CByteImage& shadowmap, float shadowAmmoun
 {
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportHeightMap())
         return;
 
     CHeightmap *heightmap=(CHeightmap *)terrain;

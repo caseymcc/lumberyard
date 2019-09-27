@@ -1700,6 +1700,16 @@ size_t C3DEngine::GetTerrainId(const char *name) const
     return TerrainFactory::getTerrainId(name);
 }
 
+const char *C3DEngine::GetTerrainName(size_t id) const
+{
+    return TerrainFactory::getTerrainName(id);
+}
+
+size_t C3DEngine::TerrainTypeSize() const
+{
+    return TerrainFactory::terrainSize();
+}
+
 float C3DEngine::GetTerrainElevation(float x, float y, int nSID)
 {
     float fZ = 0;

@@ -1580,7 +1580,7 @@ void CTerrainTextureDialog::ImportSplatMaps()
 
     IEditorTerrain *terrain=editor->GetTerrain();
 
-    if(terrain->GetType()!=GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportHeightMap())
         return;
 
     CHeightmap *heightMap=(CHeightmap *)terrain;

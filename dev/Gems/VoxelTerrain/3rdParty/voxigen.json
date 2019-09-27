@@ -4,7 +4,6 @@
     "description": "Voxel handling library",
     "includes": [
         "include",
-        "HastyNoise",
         "generic",
         "imglib"
     ],
@@ -19,38 +18,24 @@
     "lib_required": "True",
     "platform": {
         "win_x64_vs2015": {
-            "debug_libpath": [
-                "build/lib/Debug",
-                "HastyNoise/build/Debug"
+            "libpath_debug": [
+                "build/lib/Debug"
             ],
-            "debug_lib": [
+            "lib_debug": [
                 "voxigend.lib",
                 "genericd.lib",
-                "HastyNoised.lib",
                 "imagelibd.lib"
             ],
-            "release_libpath": [
-                "build/lib/Release",
-                "HastyNoise/build/Release"
+            "libpath_release": [
+                "build/lib/Release"
             ],
-            "release_lib": [
+            "lib_release": [
                 "voxigen.lib",
                 "generic.lib",
-                "HastyNoise.lib",
                 "imagelib.lib"
             ]
         },
         "win_x64_vs2017": "@win_x64_vs2015",
-        "darwin_x64": {
-            "libpath": [
-                "lib/osx"
-            ],
-            "lib": [
-                "voxigen.a",
-                "generic.a",
-                "HastyNoise.a",
-                "imagelib.lib"
-            ]
-        }
+        "win_x64_clang": "@win_x64_vs2015"
     }
 }

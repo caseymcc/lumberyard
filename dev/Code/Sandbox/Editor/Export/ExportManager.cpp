@@ -1602,7 +1602,7 @@ bool CExportManager::AddTerrain()
 {
     IEditorTerrain *terrain=GetIEditor()->GetTerrain();
 
-    if(terrain->GetType()==GetIEditor()->Get3DEngine()->GetTerrainId("CTerrain"))
+    if(!terrain->SupportSerializeTexture())
         return AddDefaultTerrain();
     else
         return true;
